@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.example.old;
 
 import java.util.Properties;
@@ -5,6 +9,12 @@ import java.util.Properties;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+/**
+ * TODO will be deleted soon
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public class ConsumerDemo {
     private static KafkaConsumer consumer;
 

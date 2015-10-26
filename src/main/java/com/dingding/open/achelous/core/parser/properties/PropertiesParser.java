@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.core.parser.properties;
 
 import java.io.IOException;
@@ -8,12 +12,16 @@ import java.util.Properties;
 
 import com.dingding.open.achelous.core.parser.Parser;
 
+/**
+ * properties解析器
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public abstract class PropertiesParser implements Parser {
 
     private static final String FILENAME = "seda.properties";
     protected static final Map<String, String> keyValues = new HashMap<String, String>();
-
-    // protected static final Map<>
 
     static {
         Properties prop = new Properties();
@@ -31,8 +39,4 @@ public abstract class PropertiesParser implements Parser {
         }
     }
 
-    // protected Map<String, String> getProperties() {
-    // // 首先，将properties中的所有key中找出第一列，即所有的实例，按实例分组。
-    //
-    // }
 }

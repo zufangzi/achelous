@@ -4,6 +4,12 @@
  */
 package com.dingding.open.achelous.core.support;
 
+/**
+ * 基础异常。
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public class BaseException extends RuntimeException {
 
     private static final long serialVersionUID = -578012046622316765L;

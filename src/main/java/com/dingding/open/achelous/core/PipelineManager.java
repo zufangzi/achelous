@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.core;
 
 import java.util.ArrayList;
@@ -17,6 +21,13 @@ import com.dingding.open.achelous.core.support.Context;
 import com.dingding.open.achelous.core.support.PluginMeta;
 import com.dingding.open.achelous.core.support.Suite;
 
+/**
+ * pipeline管理器。进行所有pipeline的解析和初始化
+ * 
+ * @see {@link Pipeline}
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public abstract class PipelineManager {
 
     private static Map<String, Pipeline> pipelinePool;
@@ -24,10 +35,13 @@ public abstract class PipelineManager {
     protected static Parser parser;
 
     static {
-        coreWork();
+        coreInit();
     }
 
-    public static synchronized void coreWork() {
+    /**
+     * 进行核心的初始化工作
+     */
+    public static synchronized void coreInit() {
         // 解析获取各类配置
         CoreConfig config = parser.parser();
 
@@ -52,6 +66,11 @@ public abstract class PipelineManager {
         }
     }
 
+    /**
+     * 进行全部参数的初始化
+     * 
+     * @param globalConfig 全局参数
+     */
     public static void globalConfigProcess(Map<String, String> globalConfig) {
         // TODO
     }

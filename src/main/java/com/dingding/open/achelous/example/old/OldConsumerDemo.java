@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.example.old;
 
 import java.io.InputStream;
@@ -14,6 +18,12 @@ import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 
+/**
+ * TODO will be deleted soon
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public class OldConsumerDemo {
     private final ConsumerConnector consumer;
     private final String topic;

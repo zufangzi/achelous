@@ -1,19 +1,38 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.core.pipeline;
 
 import java.util.List;
 
-import com.dingding.open.achelous.core.invoker.Invoker;
 import com.dingding.open.achelous.core.plugin.Plugin;
 import com.dingding.open.achelous.core.support.Context;
 
+/**
+ * Pipeline用以组装plugin，并且指定plugin执行顺序以及执行方式
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public interface Pipeline {
-
-    ThreadLocal<List<Plugin>> plugins = new ThreadLocal<List<Plugin>>();
-    ThreadLocal<List<Invoker>> invokers = new ThreadLocal<List<Invoker>>();
-
+    /**
+     * plugin打包与初始化
+     * 
+     * @param plugins plugin集合
+     */
     void bagging(List<Plugin> plugins);
 
+    /**
+     * 拼装实时pipeline
+     * 
+     * @param context {@link Context}
+     * @return {@link Pipeline}
+     */
     Pipeline combine(Context context);
 
+    /**
+     * 执行函数
+     */
     void call();
 }

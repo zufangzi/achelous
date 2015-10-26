@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.core.parser;
 
 import java.util.List;
@@ -8,6 +12,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.dingding.open.achelous.core.support.Suite;
 
+/**
+ * 配置的核心数据。可以从XML或者properties中获取
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public class CoreConfig {
     private List<Suite> suites;
     private Map<String, String> globalConfig;

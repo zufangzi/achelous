@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.example.old;
 
 import java.util.Properties;
@@ -7,6 +11,12 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+/**
+ * TODO will be deleted soon
+ * 
+ * @author surlymo
+ * @date Oct 27, 2015
+ */
 public class PublishDemo {
     private static Producer<String, String> producer;
     private final static String TOPIC = "my-replicated-topic";
