@@ -4,19 +4,19 @@
  */
 package com.dingding.open.achelous.core;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
+import com.dingding.open.achelous.core.parser.properties.PropertiesParser;
 import com.dingding.open.achelous.core.pipeline.DftPipeline;
 import com.dingding.open.achelous.core.pipeline.Pipeline;
 import com.dingding.open.achelous.core.plugin.Plugin;
-import com.dingding.open.achelous.core.plugin.impl.CommonProcessorPlugin;
-import com.dingding.open.achelous.core.plugin.impl.KafkaConsumerPlugin;
-import com.dingding.open.achelous.core.plugin.impl.KafkaProducerPlugin;
+import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.Context;
 import com.dingding.open.achelous.core.support.PluginMeta;
 import com.dingding.open.achelous.core.support.Suite;
@@ -28,20 +28,36 @@ import com.dingding.open.achelous.core.support.Suite;
  * @author surlymo
  * @date Oct 27, 2015
  */
-public abstract class PipelineManager {
+public class PipelineManager {
 
-    private static Map<String, Pipeline> pipelinePool;
+    private static final Map<String, Pipeline> pipelinePool = new HashMap<String, Pipeline>();
 
-    protected static Parser parser;
+    private static Parser parser;
+
+    private static final String PLUGINPATH = "com/dingding/open/achelous/core/plugin/impl";
+
+    private static final Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
 
     static {
         coreInit();
     }
 
+    public static Pipeline getPipeline(String name) {
+        return pipelinePool.get(name);
+    }
+
     /**
      * 进行核心的初始化工作
      */
-    public static synchronized void coreInit() {
+    private static synchronized void coreInit() {
+
+        if (parser == null) {
+            parser = new PropertiesParser();
+        }
+
+        // 将plugin进行实例化
+        initPlugins();
+
         // 解析获取各类配置
         CoreConfig config = parser.parser();
 
@@ -56,13 +72,32 @@ public abstract class PipelineManager {
             List<Plugin> plugins = new ArrayList<Plugin>();
 
             for (PluginMeta meta : suite.getPluginMetas()) {
-                try {
-                    plugins.add((Plugin) Class.forName(meta.getPluginName()).newInstance());
-
-                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                    e.printStackTrace();// TODO
-                }
+                plugins.add(pluginMap.get(meta.getPluginName()));
             }
+            pipeline.bagging(plugins);
+        }
+    }
+
+    private static void initPlugins() {
+        File file = new File(PipelineManager.class.getClassLoader().getResource("").getPath() + PLUGINPATH);
+        String prefix = PLUGINPATH.replace("/", ".");
+        for (String str : file.list()) {
+
+            Plugin plugin = null;
+            try {
+                plugin = (Plugin) Class.forName(prefix + "." + str.split("\\.")[0]).newInstance();
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            PluginName name = plugin.getClass().getAnnotation(PluginName.class);
+            pluginMap.put(name.value().name(), plugin);
         }
     }
 
@@ -75,14 +110,10 @@ public abstract class PipelineManager {
         // TODO
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        Plugin a = new KafkaConsumerPlugin();
-        Plugin b = new CommonProcessorPlugin();
-        Plugin c = new KafkaProducerPlugin();
-
-        Pipeline pipe = new DftPipeline();
-        pipe.bagging(Arrays.asList(a, b, c));
+        Pipeline pipe = getPipeline("msgCenter");
         pipe.combine(new Context()).call();
+
     }
 }

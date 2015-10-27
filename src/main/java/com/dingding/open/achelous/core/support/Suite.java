@@ -4,6 +4,7 @@
  */
 package com.dingding.open.achelous.core.support;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -18,7 +19,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class Suite {
 
     private String name;
-    private List<PluginMeta> pluginMetas;
+    private List<PluginMeta> pluginMetas = new ArrayList<PluginMeta>();
 
     public String getName() {
         return name;
