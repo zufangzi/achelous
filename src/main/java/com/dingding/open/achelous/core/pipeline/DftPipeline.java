@@ -20,16 +20,17 @@ import com.dingding.open.achelous.core.support.Context;
  */
 public class DftPipeline implements Pipeline {
 
-    private List<Plugin> plugins;
-    private List<Invoker> invokers;
+    private List<Plugin> plugins = new ArrayList<Plugin>();
+
+    private static final ThreadLocal<List<Invoker>> invokers = new ThreadLocal<List<Invoker>>();
 
     public void bagging(List<Plugin> plugins) {
-        this.plugins = plugins;
-        this.invokers = new ArrayList<Invoker>();
+        this.plugins.addAll(plugins);
     }
 
     @Override
     public Pipeline combine(Context context) {
+        invokers.set(new ArrayList<Invoker>());
         Plugin combinedPlugin = plugins.get(0);
         for (int i = 1; i <= plugins.size() - 1; i++) {
             combinedPlugin = combine(combinedPlugin, plugins.get(i), context);
@@ -39,7 +40,6 @@ public class DftPipeline implements Pipeline {
     }
 
     private Plugin combine(final Plugin now, final Plugin next, final Context context) {
-
         Invoker invoker = new Invoker() {
 
             @Override
@@ -65,16 +65,17 @@ public class DftPipeline implements Pipeline {
                 return false;
             }
         };
-        invokers.add(invoker);
+        invokers.get().add(invoker);
         return next;
     }
 
     @Override
     public void call() {
-        Iterator<Invoker> iterator = invokers.iterator();
+        Iterator<Invoker> iterator = invokers.get().iterator();
         while (iterator.hasNext()) {
             Invoker invoker = iterator.next();
             invoker.invoke(iterator);
         }
+        invokers.remove();
     }
 }

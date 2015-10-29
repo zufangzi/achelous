@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.dingding.open.achelous.core.cache.HierarchicalCache;
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
 import com.dingding.open.achelous.core.parser.properties.PropertiesParser;
@@ -34,15 +36,26 @@ public class PipelineManager {
 
     private static Parser parser;
 
-    private static final String PLUGINPATH = "com/dingding/open/achelous/core/plugin/impl";
+    // private static final String DEFAULT_PLUGIN_PATH = "com.dingding.open.achelous.core.plugin.impl";
 
     private static final Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
+
+    private static String defaultPipeline = null;
+
+    private static final Map<String, Map<String, Map<String, String>>> suite2Plugin2FeatureMap =
+            new HashMap<String, Map<String, Map<String, String>>>();
+
+    private static final List<String> pluginPaths = new ArrayList<String>();
+
+    private static CoreConfig coreConfig = null;
+
+    private static volatile AtomicBoolean defaultPipelineSwitch = new AtomicBoolean(false);
 
     static {
         coreInit();
     }
 
-    public static Pipeline getPipeline(String name) {
+    private static Pipeline getPipeline(String name) {
         return pipelinePool.get(name);
     }
 
@@ -55,32 +68,69 @@ public class PipelineManager {
             parser = new PropertiesParser();
         }
 
-        // 将plugin进行实例化
-        initPlugins();
+        HierarchicalCache.init();
 
         // 解析获取各类配置
-        CoreConfig config = parser.parser();
+        coreConfig = parser.parser();
 
         // 进行全部参数的处理
-        globalConfigProcess(config.getGlobalConfig());
+        globalConfigProcess(coreConfig.getGlobalConfig());
 
-        // 进行bundle的pipeline组装
-        for (Suite suite : config.getSuites()) {
+        bagging();
+    }
+
+    private static void bagging() {
+        for (Suite suite : coreConfig.getSuites()) {
+            Map<String, Map<String, String>> pluginsFeatureMap = new HashMap<String, Map<String, String>>();
             Pipeline pipeline = new DftPipeline();
             // 首先将自己pipeline下的所有plugin进行实例化，并灌入pool中去。
             pipelinePool.put(suite.getName(), pipeline);
             List<Plugin> plugins = new ArrayList<Plugin>();
 
             for (PluginMeta meta : suite.getPluginMetas()) {
-                plugins.add(pluginMap.get(meta.getPluginName()));
+
+                if (pluginMap.get(meta.getPluginName()) == null) {
+                    continue;
+                }
+
+                Plugin plugin = pluginMap.get(meta.getPluginName()).init(suite.getName());
+                plugins.add(plugin);
+                pluginsFeatureMap.put(meta.getPluginName(), meta.getFeature2ValueMap());
             }
             pipeline.bagging(plugins);
+
+            if (defaultPipelineSwitch.compareAndSet(false, true)) {
+                defaultPipeline = suite.getName();
+            }
+
+            suite2Plugin2FeatureMap.put(suite.getName(), pluginsFeatureMap);
         }
     }
 
-    private static void initPlugins() {
-        File file = new File(PipelineManager.class.getClassLoader().getResource("").getPath() + PLUGINPATH);
-        String prefix = PLUGINPATH.replace("/", ".");
+    public synchronized static void checkPluginPath(String path) {
+        if (pluginPaths.contains(path)) {// 如果存在，则返回
+            return;
+        }
+        // 不存在则开始补充初始化
+        pluginPaths.add(path);
+        initByPath(path);
+        bagging();
+    }
+
+    private static void initByPath(String path) {
+        String initPath = PipelineManager.class.getClassLoader().getResource("").getPath();
+        initPath =
+                initPath.substring(0, initPath.lastIndexOf("target") + 7) + "classes"
+                        + File.separator;
+
+        File file =
+                new File(initPath + path.replace(".", File.separator));
+
+        if (!file.exists()) {
+            return;
+        }
+
+        String prefix = path;
         for (String str : file.list()) {
 
             Plugin plugin = null;
@@ -106,14 +156,25 @@ public class PipelineManager {
      * 
      * @param globalConfig 全局参数
      */
-    public static void globalConfigProcess(Map<String, String> globalConfig) {
-        // TODO
+    private static void globalConfigProcess(Map<String, Object> globalConfig) {
+        // initPlugins
+        for (String path : (List<String>) globalConfig.get(CoreConfig.GLOBAL_PLUGIN_PATH)) {
+            if (path != null) {
+                pluginPaths.add(path);
+            }
+            initByPath(path);
+        }
     }
 
-    public static void main(String[] args) throws Exception {
-
-        Pipeline pipe = getPipeline("msgCenter");
-        pipe.combine(new Context()).call();
-
+    public static void call(Context context) {
+        call(defaultPipeline, context);
     }
+
+    public static void call(String pipeline, Context context) {
+        Pipeline pipe = getPipeline(pipeline);
+        context.setPipelineName(pipeline);
+        context.setPlugin2ConfigMap(suite2Plugin2FeatureMap.get(pipeline));
+        pipe.combine(context).call();
+    }
+
 }

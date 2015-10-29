@@ -5,7 +5,9 @@
 package com.dingding.open.achelous.core.support;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -20,6 +22,15 @@ public class Suite {
 
     private String name;
     private List<PluginMeta> pluginMetas = new ArrayList<PluginMeta>();
+    private Map<String, String> commonConfig = new HashMap<String, String>();
+
+    public Map<String, String> getCommonConfig() {
+        return commonConfig;
+    }
+
+    public void setCommonConfig(Map<String, String> commonConfig) {
+        this.commonConfig = commonConfig;
+    }
 
     public String getName() {
         return name;

@@ -4,6 +4,7 @@
  */
 package com.dingding.open.achelous.core.parser;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,11 @@ import com.dingding.open.achelous.core.support.Suite;
  * @date Oct 27, 2015
  */
 public class CoreConfig {
+
+    public static final String GLOBAL_PLUGIN_PATH = "global_plugin_path";
+
     private List<Suite> suites;
-    private Map<String, String> globalConfig;
+    private Map<String, Object> globalConfig = new HashMap<String, Object>();
 
     public List<Suite> getSuites() {
         return suites;
@@ -30,11 +34,11 @@ public class CoreConfig {
         this.suites = suites;
     }
 
-    public Map<String, String> getGlobalConfig() {
+    public Map<String, Object> getGlobalConfig() {
         return globalConfig;
     }
 
-    public void setGlobalConfig(Map<String, String> globalConfig) {
+    public void setGlobalConfig(Map<String, Object> globalConfig) {
         this.globalConfig = globalConfig;
     }
 

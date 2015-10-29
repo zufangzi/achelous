@@ -1,4 +1,8 @@
-package com.dingding.open.achelous.core.parser.properties;
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
+package com.dingding.open.achelous.core.support;
 
 import java.util.Collections;
 import java.util.Enumeration;

@@ -7,6 +7,13 @@
 4. will use kafka as the default stage-communicated mq.
 
 ##Changelog
+
+**v0.3** —— **2015-10-29** 
++ kafka producer plugin mainly completed.
++ provide kafka entrance with **pub** function
++ provide dynamic plugin path. can use special plugin entrance path or default path.
++ provide 3-level cache
+
 **v0.2** —— **2015-10-27**
 + provide properties parser.
 + pipeline manger core-initialization mainly fininshed.
