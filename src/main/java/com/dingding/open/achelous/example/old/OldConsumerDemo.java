@@ -4,7 +4,6 @@
  */
 package com.dingding.open.achelous.example.old;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,15 +82,20 @@ public class OldConsumerDemo {
 
     public static void main(String[] args) throws Exception {
 
-        Properties prop = new Properties();
-        InputStream input = ClassLoader.getSystemResourceAsStream("seda.properties");
-        System.out.println(input);
-        prop.load(input);
+        // Properties prop = new Properties();
+        // InputStream input = ClassLoader.getSystemResourceAsStream("seda.properties");
+        // System.out.println(input);
+        // prop.load(input);
 
-        String zooKeeper = (String) prop.get("kafka.consumer.zkconfig");
-        String groupId = (String) prop.get("kafka.consumer.group.id");
-        String topic = (String) prop.get("kafka.consumer.from");
-        int threads = Integer.valueOf(prop.get("kafka.consumer.streams").toString());
+        // String zooKeeper = (String) prop.get("kafka.consumer.zkconfig");
+        // String groupId = (String) prop.get("kafka.consumer.group.id");
+        // String topic = (String) prop.get("kafka.consumer.from");
+        // int threads = Integer.valueOf(prop.get("kafka.consumer.streams").toString());
+
+        String zooKeeper = "192.168.200.128:2181";
+        String groupId = "consumer-seda-prop";
+        String topic = "my-replicated-topic";
+        int threads = 4;
 
         OldConsumerDemo example = new OldConsumerDemo(zooKeeper, groupId, topic);
         example.run(threads);
@@ -116,8 +120,11 @@ public class OldConsumerDemo {
 
         public void run() {
             System.out.println("Thread " + m_threadNumber + ": ");
+            System.out.println("=====");
             ConsumerIterator<byte[], byte[]> it = m_stream.iterator();
+
             System.out.println("Thread " + m_threadNumber + ": " + it.hasNext());
+            System.out.println("----------");
             while (it.hasNext())
                 System.out.println("Thread " + m_threadNumber + ": " + new String(it.next().message()));
             System.out.println("Shutting down Thread: " + m_threadNumber);

@@ -1,5 +1,15 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.core.support;
 
+/**
+ * 配置项
+ * 
+ * @author surlymo
+ * @date Nov 3, 2015
+ */
 public class ConfigConstant {
     private String name;
     private String defaultConfig;

@@ -2,7 +2,7 @@
  * DingDing.com Inc.
  * Copyright (c) 2000-2016 All Rights Reserved.
  */
-package com.dingding.open.achelous.kafka.plugin;
+package com.dingding.open.achelous.common;
 
 import java.util.Iterator;
 import java.util.Map;

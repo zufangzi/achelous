@@ -29,7 +29,7 @@ public abstract class AbstractPlugin<T extends Context> implements Plugin<T> {
 
     private static final String CACHE_PIPELINE = "pipeline";
 
-    private static String pluginName = null;
+    private String pluginName = null;
 
     public static final Map<String, AtomicBoolean> MUTEX = new ConcurrentHashMap<String, AtomicBoolean>();
     public static final String MUTEX_MARK = "mutex";

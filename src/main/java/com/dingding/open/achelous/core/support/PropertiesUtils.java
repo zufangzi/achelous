@@ -25,9 +25,9 @@ public class PropertiesUtils {
      * @param config 参数map。
      */
     public static void put(Properties properties, String key, ConfigConstant value, Map<String, String> config) {
-        if (value.getName() == null && value.getDefaultConfig() != null) {
+        if (config.get(value.getName()) == null && value.getDefaultConfig() != null) {
             properties.put(key, value.getDefaultConfig());
-        } else if (value.getName() == null || config.get(value.getName()) == null) {
+        } else if (config.get(value.getName()) == null && value.getDefaultConfig() == null) {
             return;
         } else {
             properties.put(key, config.get(value.getName()));

@@ -8,10 +8,16 @@
 
 ##Changelog
 
+**v0.4** —— **2015-11-03**
++ provide kafka consumer & producer plugin. 
++ kafka entrance & starter packaging.
++ achelous-core framwork's expansibility upgrade.
++ fix a few bugs.
+
 **v0.3** —— **2015-10-29** 
 + kafka producer plugin mainly completed.
 + provide kafka entrance with **pub** function
-+ provide dynamic plugin path. can use special plugin entrance path or default path.
++ provide dynamic plugin path. can use specific plugin entrance path or default path.
 + provide 3-level cache
 
 **v0.2** —— **2015-10-27**

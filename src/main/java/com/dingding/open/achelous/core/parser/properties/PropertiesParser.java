@@ -78,16 +78,34 @@ public class PropertiesParser implements Parser {
             // 如果是全局参数，则处理。模式为"global.config"
             if (keyMetas.length == 3 && !keyMetas[1].equals("plugin")) {// 如果是三截的且为"suite.plugin.config"的模式
 
-                String suiteName = keyMetas[0];
+            }
+            if (keyMetas.length == 3 && keyMetas[0].equals(GLOBAL_CONFIG_PREFIX) && keyMetas[1].equals("plugin")
+                    && keyMetas[2].equals("path")) { // 如果是约定的插件的路径，则将信息进行装填
+                coreConfig.getGlobalConfig().put(CoreConfig.GLOBAL_PLUGIN_PATH,
+                        Arrays.asList(entry.getValue().split(";")));
+            } else if (keyMetas.length == 2 && keyMetas[1].equals(SUITE_STAGE_FLAG)) {// 如果是"suite.stage"模式的
+                // TODO 填充suite2PluginIndexMap.类型Map<String, Map<String, Integer>>。基于这个再进行一次排序。
+            } else {
+
+                String suiteName = null;
+                String pluginName = null;
+                String configKey = null;
+                String configValue = entry.getValue();
+                if (keyMetas.length == 3) {// 完整版
+                    suiteName = keyMetas[0];
+                    pluginName = keyMetas[1];
+                    configKey = keyMetas[2];
+                } else { // 简化版，把pipename隐藏
+                    suiteName = "default-pipe";
+                    pluginName = keyMetas[0];
+                    configKey = keyMetas[1];
+                }
+
                 if (suiteName2ObjMap.get(suiteName) == null) {
                     Suite suite = new Suite();
                     suite.setName(suiteName);
                     suiteName2ObjMap.put(suiteName, suite);
                 }
-
-                String pluginName = keyMetas[1];
-                String configKey = keyMetas[2];
-                String configValue = entry.getValue();
 
                 if (pluginName2ObjMap.get(suiteName + pluginName) == null) {
                     PluginMeta meta = new PluginMeta();
@@ -98,13 +116,6 @@ public class PropertiesParser implements Parser {
                 } else {
                     pluginName2ObjMap.get(suiteName + pluginName).getFeature2ValueMap().put(configKey, configValue);
                 }
-
-            } else if (keyMetas.length == 3 && keyMetas[0].equals("global") && keyMetas[1].equals("plugin")
-                    && keyMetas[2].equals("path")) { // 如果是约定的插件的路径，则将信息进行装填
-                coreConfig.getGlobalConfig().put(CoreConfig.GLOBAL_PLUGIN_PATH,
-                        Arrays.asList(entry.getValue().split(";")));
-            } else if (keyMetas.length == 2 && keyMetas[1].equals(SUITE_STAGE_FLAG)) {// 如果是"suite.stage"模式的
-                // TODO 填充suite2PluginIndexMap.类型Map<String, Map<String, Integer>>。基于这个再进行一次排序。
             }
         }
 

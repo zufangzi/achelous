@@ -52,7 +52,7 @@ public class PipelineManager {
     private static volatile AtomicBoolean defaultPipelineSwitch = new AtomicBoolean(false);
 
     static {
-        coreInit();
+        coreInit(null);
     }
 
     private static Pipeline getPipeline(String name) {
@@ -62,7 +62,7 @@ public class PipelineManager {
     /**
      * 进行核心的初始化工作
      */
-    private static synchronized void coreInit() {
+    private static synchronized void coreInit(String coreConfigFilePath) {
 
         if (parser == null) {
             parser = new PropertiesParser();
@@ -133,6 +133,10 @@ public class PipelineManager {
         String prefix = path;
         for (String str : file.list()) {
 
+            if (str.contains("$")) {
+                continue;
+            }
+
             Plugin plugin = null;
             try {
                 plugin = (Plugin) Class.forName(prefix + "." + str.split("\\.")[0]).newInstance();
@@ -157,6 +161,11 @@ public class PipelineManager {
      * @param globalConfig 全局参数
      */
     private static void globalConfigProcess(Map<String, Object> globalConfig) {
+
+        if (globalConfig.get(CoreConfig.GLOBAL_PLUGIN_PATH) == null) {
+            return;
+        }
+
         // initPlugins
         for (String path : (List<String>) globalConfig.get(CoreConfig.GLOBAL_PLUGIN_PATH)) {
             if (path != null) {
