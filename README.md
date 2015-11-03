@@ -8,6 +8,9 @@
 
 ##Changelog
 
+**v0.5** —— **2015-11-03**
++ turn into multi-maven projects
+
 **v0.4** —— **2015-11-03**
 + provide kafka consumer & producer plugin. 
 + kafka entrance & starter packaging.
