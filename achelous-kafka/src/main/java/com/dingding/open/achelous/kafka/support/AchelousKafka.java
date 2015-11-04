@@ -6,6 +6,7 @@ package com.dingding.open.achelous.kafka.support;
 
 import com.dingding.open.achelous.core.AbstractEntrance;
 import com.dingding.open.achelous.core.PipelineManager;
+import com.dingding.open.achelous.core.support.Context;
 
 /**
  * seda框架的kafka实现入口。集成发布消息、消费消息、核心处理的功能与入口
@@ -61,22 +62,24 @@ public class AchelousKafka extends AbstractEntrance {
         manager.call(pipeline, fillPubBaseContext(key, value));
     }
 
-    public <T> void sub(String pipeline, KafkaContext context) {
+    public <T> void sub(String pipeline, Context context) {
         manager.call(pipeline, context);
     }
 
     public <T> void sub(String pipeline) {
-        manager.call(pipeline, new KafkaContext());
+        manager.call(pipeline, new Context());
     }
 
     public void sub() {
-        manager.call(new KafkaContext());
+        manager.call(new Context());
     }
 
-    private static KafkaContext fillPubBaseContext(String key, Object value) {
-        KafkaContext context = new KafkaContext();
-        context.setKey(key);
-        context.setValue(value);
+    private static Context fillPubBaseContext(String key, Object value) {
+        Context context = new Context();
+        KafkaContext kafkaContext = new KafkaContext();
+        kafkaContext.setKey(key);
+        kafkaContext.setValue(value);
+        context.getContextMap().put("kafka", kafkaContext);
         return context;
     }
 }

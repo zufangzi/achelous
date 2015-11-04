@@ -2,7 +2,7 @@
  * DingDing.com Inc.
  * Copyright (c) 2000-2016 All Rights Reserved.
  */
-package com.dingding.open.achelous.common;
+package com.dingding.open.achelous.core.support;
 
 import com.dingding.open.achelous.core.plugin.PluginTypes;
 
@@ -22,4 +22,14 @@ public class CommonPluginTypes extends PluginTypes {
      * 通用的处理器插件。
      */
     public static final String COM_PROC = "com_proc";
+
+    /**
+     * 快速失败
+     */
+    public static final String FAST_FAIL = "fail_fast";
+
+    /**
+     * 失败后重试
+     */
+    public static final String FAIL_RETRY = "fail_retry";
 }

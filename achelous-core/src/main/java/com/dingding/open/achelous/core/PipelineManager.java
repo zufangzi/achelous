@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.dingding.open.achelous.core.cache.HierarchicalCache;
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
 import com.dingding.open.achelous.core.parser.properties.PropertiesParser;
@@ -36,7 +35,7 @@ public class PipelineManager {
 
     private static Parser parser;
 
-    // private static final String DEFAULT_PLUGIN_PATH = "com.dingding.open.achelous.core.plugin.impl";
+    private static final String DEFAULT_PLUGIN_PATH = "com.dingding.open.achelous.common";
 
     private static final Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
 
@@ -68,19 +67,20 @@ public class PipelineManager {
             parser = new PropertiesParser();
         }
 
-        HierarchicalCache.init();
-
         // 解析获取各类配置
         coreConfig = parser.parser();
 
         // 进行全部参数的处理
         globalConfigProcess(coreConfig.getGlobalConfig());
 
+        initByPath(DEFAULT_PLUGIN_PATH);
+
         bagging();
     }
 
     private static void bagging() {
         for (Suite suite : coreConfig.getSuites()) {
+            Map<String, Integer> pluginRepeatTimeMap = new HashMap<String, Integer>();
             Map<String, Map<String, String>> pluginsFeatureMap = new HashMap<String, Map<String, String>>();
             Pipeline pipeline = new DftPipeline();
             // 首先将自己pipeline下的所有plugin进行实例化，并灌入pool中去。
@@ -93,9 +93,18 @@ public class PipelineManager {
                     continue;
                 }
 
+                int sequence = 1;
+                if (pluginRepeatTimeMap.get(meta.getPluginName()) == null) {
+                    pluginRepeatTimeMap.put(meta.getPluginName(), 1);
+                } else {
+                    int oldValue = pluginRepeatTimeMap.get(meta.getPluginName());
+                    sequence = ++oldValue;
+                    pluginRepeatTimeMap.put(meta.getPluginName(), sequence);
+                }
+
                 Plugin plugin = pluginMap.get(meta.getPluginName()).init(suite.getName());
                 plugins.add(plugin);
-                pluginsFeatureMap.put(meta.getPluginName(), meta.getFeature2ValueMap());
+                pluginsFeatureMap.put(meta.getPluginName() + sequence, meta.getFeature2ValueMap());
             }
             pipeline.bagging(plugins);
 
@@ -117,14 +126,19 @@ public class PipelineManager {
         bagging();
     }
 
+    /**
+     * 目前是基于目录递归new出来的。随后需要考虑plugin是Spring Bean的情况
+     * 
+     * TODO
+     * 
+     * @param path
+     */
     private static void initByPath(String path) {
-        String initPath = PipelineManager.class.getClassLoader().getResource("").getPath();
-        initPath =
-                initPath.substring(0, initPath.lastIndexOf("target") + 7) + "classes"
-                        + File.separator;
+        String initPath =
+                PipelineManager.class.getClassLoader().getResource(path.replace(".", "/")).getPath();
+        initPath = initPath.replace("/", File.separator);
 
-        File file =
-                new File(initPath + path.replace(".", File.separator));
+        File file = new File(initPath);
 
         if (!file.exists()) {
             return;
@@ -132,7 +146,11 @@ public class PipelineManager {
 
         String prefix = path;
         for (String str : file.list()) {
-
+            File tmpFile = new File(initPath + File.separator + str);
+            if (tmpFile.isDirectory()) {
+                initByPath(path + "." + str);
+                continue;
+            }
             if (str.contains("$")) {
                 continue;
             }
@@ -160,6 +178,7 @@ public class PipelineManager {
      * 
      * @param globalConfig 全局参数
      */
+    @SuppressWarnings("unchecked")
     private static void globalConfigProcess(Map<String, Object> globalConfig) {
 
         if (globalConfig.get(CoreConfig.GLOBAL_PLUGIN_PATH) == null) {

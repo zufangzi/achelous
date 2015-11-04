@@ -7,6 +7,7 @@ package com.dingding.open.achelous.kafka.mixtest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.dingding.open.achelous.core.PipelineManager;
 import com.dingding.open.achelous.kafka.KafkaBootStraper;
 import com.dingding.open.achelous.kafka.TestObj;
 import com.dingding.open.achelous.kafka.support.AchelousKafka;
@@ -79,5 +80,12 @@ public class AchelousKafkaTest {
             Assert.fail();
         }
 
+    }
+
+    public static void main(String[] args) {
+        System.out.println(PipelineManager.class.getClassLoader()
+                .getResource("").getPath());
+        System.out.println(PipelineManager.class.getClassLoader()
+                .getResource("com/dingding/open/achelous/common"));
     }
 }

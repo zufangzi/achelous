@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 分为三级cache。分别为pipeline、pipeline+plugin、以及threadlocal级别的.如果pipeline里面用到多次同一个plugin目前没有做很好适配。 如有类似需求可以加入index来做cache
  * 
+ * TODO
+ * 
  * @author surlymo
  * @date Oct 28, 2015
  */
@@ -23,19 +25,15 @@ public class HierarchicalCache {
             new ConcurrentHashMap<String, Map<String, Object>>();
 
     /**
-     * cache容器初始化。
-     */
-    public static void init() {
-        level3Cache.set(new HashMap<String, Object>());
-    }
-
-    /**
      * 获取三级cache。为threadlocal级别
      * 
      * @param key cache的key
      * @return cache的value
      */
     public static <T> T getLevel3CacheByKey(String key) {
+        if (level3Cache.get() == null) {
+            level3Cache.set(new HashMap<String, Object>());
+        }
         return (T) level3Cache.get().get(key);
     }
 
@@ -46,6 +44,9 @@ public class HierarchicalCache {
      * @param value cache的value
      */
     public static <T> void setLevel3CacheKey(String key, T value) {
+        if (level3Cache.get() == null) {
+            level3Cache.set(new HashMap<String, Object>());
+        }
         level3Cache.get().put(key, value);
     }
 

@@ -8,17 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
+import com.dingding.open.achelous.core.parser.properties.OrderProperties.SortedUnuniqueKey;
 import com.dingding.open.achelous.core.support.BaseException;
-import com.dingding.open.achelous.core.support.OrderProperties;
 import com.dingding.open.achelous.core.support.PluginMeta;
 import com.dingding.open.achelous.core.support.Suite;
 
@@ -32,7 +31,7 @@ public class PropertiesParser implements Parser {
 
     private static final Logger logger = Logger.getLogger(PropertiesParser.class);
     private static final String FILENAME = "seda.properties";
-    private static final Map<String, String> keyValues = new LinkedHashMap<String, String>();
+    private static final Set<SortedUnuniqueKey> keyValus = new LinkedHashSet<SortedUnuniqueKey>();
 
     private static final String GLOBAL_CONFIG_PREFIX = "global";
     private static final String SUITE_STAGE_FLAG = "stage";
@@ -58,22 +57,21 @@ public class PropertiesParser implements Parser {
             throw new BaseException();
         }
 
-        for (Object initKey : prop.keySet()) {
-            String key = (String) initKey;
-            String value = prop.getProperty(key);
-            keyValues.put(key, value);
+        for (Object obj : prop.keySet()) {
+            keyValus.add((SortedUnuniqueKey) obj);
         }
+
     }
 
     private static CoreConfig createSuites() {
         CoreConfig coreConfig = new CoreConfig();
         Map<String, Suite> suiteName2ObjMap = new HashMap<String, Suite>();
 
-        // suiteName+pluginName作为key，plugin的具体元数据作为value。
-        Map<String, PluginMeta> pluginName2ObjMap = new HashMap<String, PluginMeta>();
-
-        for (Entry<String, String> entry : keyValues.entrySet()) {
-            String[] keyMetas = entry.getKey().split("\\.");
+        String formerPlugin = null;
+        String formerSuite = null;
+        PluginMeta formerPluginMeta = null;
+        for (SortedUnuniqueKey entry : keyValus) {
+            String[] keyMetas = entry.getKey().toString().split("\\.");
 
             // 如果是全局参数，则处理。模式为"global.config"
             if (keyMetas.length == 3 && !keyMetas[1].equals("plugin")) {// 如果是三截的且为"suite.plugin.config"的模式
@@ -82,7 +80,7 @@ public class PropertiesParser implements Parser {
             if (keyMetas.length == 3 && keyMetas[0].equals(GLOBAL_CONFIG_PREFIX) && keyMetas[1].equals("plugin")
                     && keyMetas[2].equals("path")) { // 如果是约定的插件的路径，则将信息进行装填
                 coreConfig.getGlobalConfig().put(CoreConfig.GLOBAL_PLUGIN_PATH,
-                        Arrays.asList(entry.getValue().split(";")));
+                        Arrays.asList(entry.getValue().toString().split(";")));
             } else if (keyMetas.length == 2 && keyMetas[1].equals(SUITE_STAGE_FLAG)) {// 如果是"suite.stage"模式的
                 // TODO 填充suite2PluginIndexMap.类型Map<String, Map<String, Integer>>。基于这个再进行一次排序。
             } else {
@@ -90,7 +88,7 @@ public class PropertiesParser implements Parser {
                 String suiteName = null;
                 String pluginName = null;
                 String configKey = null;
-                String configValue = entry.getValue();
+                String configValue = entry.getValue().toString();
                 if (keyMetas.length == 3) {// 完整版
                     suiteName = keyMetas[0];
                     pluginName = keyMetas[1];
@@ -101,21 +99,34 @@ public class PropertiesParser implements Parser {
                     configKey = keyMetas[1];
                 }
 
-                if (suiteName2ObjMap.get(suiteName) == null) {
-                    Suite suite = new Suite();
+                Suite suite = null;
+                // 如果不等，说明已经进入下一suite了。此时新增个suite对象
+                if (!suiteName.equals(formerSuite)) {
+                    suite = new Suite();
                     suite.setName(suiteName);
                     suiteName2ObjMap.put(suiteName, suite);
+
+                    formerSuite = suiteName;
+
+                } else {
+                    suite = suiteName2ObjMap.get(suiteName);
                 }
 
-                if (pluginName2ObjMap.get(suiteName + pluginName) == null) {
+                // 如果不等，说明已经进入下一plugin了。此时新增个plugin对象
+                if (!pluginName.equals(formerPlugin)) {
                     PluginMeta meta = new PluginMeta();
                     meta.setPluginName(pluginName);
                     meta.getFeature2ValueMap().put(configKey, configValue);
-                    pluginName2ObjMap.put(suiteName + pluginName, meta);
-                    suiteName2ObjMap.get(suiteName).getPluginMetas().add(meta);
-                } else {
-                    pluginName2ObjMap.get(suiteName + pluginName).getFeature2ValueMap().put(configKey, configValue);
+                    suite.getPluginMetas().add(meta);
+                    formerPluginMeta = meta;
+
+                    // 最后，将formerPlugin进行更新。
+                    formerPlugin = pluginName;
+
+                } else {// 如果相等，就是在plugin里面加feature就行了
+                    formerPluginMeta.getFeature2ValueMap().put(configKey, configValue);
                 }
+
             }
         }
 

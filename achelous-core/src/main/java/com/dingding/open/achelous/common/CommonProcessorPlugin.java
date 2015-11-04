@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
+import com.dingding.open.achelous.core.support.CommonPluginTypes;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
@@ -33,7 +34,7 @@ public class CommonProcessorPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void doWork(Iterator invokers, Context context, Map config) {
+    public void doWork(Iterator invokers, Context context, Map config) throws Throwable {
         // TODO Auto-generated method stub
 
     }

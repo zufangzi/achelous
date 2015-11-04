@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.dingding.open.achelous.core.cache.HierarchicalCache;
 import com.dingding.open.achelous.core.invoker.Invoker;
+import com.dingding.open.achelous.core.support.CallbackType;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
@@ -19,7 +20,7 @@ import com.dingding.open.achelous.core.support.Context;
  * @author surlymo
  * @date Oct 27, 2015
  */
-public abstract class AbstractPlugin<T extends Context> implements Plugin<T> {
+public abstract class AbstractPlugin implements Plugin {
 
     protected enum CacheLevel {
         THREAD,
@@ -30,6 +31,8 @@ public abstract class AbstractPlugin<T extends Context> implements Plugin<T> {
     private static final String CACHE_PIPELINE = "pipeline";
 
     private String pluginName = null;
+
+    protected String attachConfig;
 
     public static final Map<String, AtomicBoolean> MUTEX = new ConcurrentHashMap<String, AtomicBoolean>();
     public static final String MUTEX_MARK = "mutex";
@@ -82,12 +85,42 @@ public abstract class AbstractPlugin<T extends Context> implements Plugin<T> {
     }
 
     @Override
-    public void onNext(Iterator<Invoker> invokers, T context) {
+    public void onNext(Iterator<Invoker> invokers, Context context) throws Throwable {
         if (HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE) == null) {
             HierarchicalCache.setLevel3CacheKey(CACHE_PIPELINE, context.getPipelineName());
         }
-        doWork(invokers, context, context.initPluginsConfig(pluginName));
+        int count = 1;
+        if (context.getPluginName2RepeatCounter().get(pluginName) == null) {
+            context.getPluginName2RepeatCounter().put(pluginName, 1);
+        } else {
+            int oldValue = context.getPluginName2RepeatCounter().get(pluginName);
+            count = ++oldValue;
+            context.getPluginName2RepeatCounter().put(pluginName, count);
+        }
+
+        doWork(invokers, context, context.initPluginsConfig(pluginName + count));
     }
 
-    public abstract void doWork(Iterator<Invoker> invokers, T context, Map<String, String> config);
+    @Override
+    public void onCallBack(CallbackType type, Iterator<Invoker> invokers, Context context) {
+
+    }
+
+    @Override
+    public void onError(Iterator<Invoker> invokers, Context context, Throwable t) {
+
+    }
+
+    @Override
+    public void onCompleted(Iterator<Invoker> invokers, Context context) {
+
+    }
+
+    @Override
+    public void attachConfigWhenPluginInitial(String attach) {
+        attachConfig = attach;
+    }
+
+    public abstract void doWork(Iterator<Invoker> invokers, Context context, Map<String, String> config)
+            throws Throwable;
 }

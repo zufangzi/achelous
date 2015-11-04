@@ -29,8 +29,8 @@ import com.dingding.open.achelous.core.invoker.Invoker;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.ConfigConstant;
+import com.dingding.open.achelous.core.support.Context;
 import com.dingding.open.achelous.core.support.PropertiesUtils;
-import com.dingding.open.achelous.kafka.support.KafkaContext;
 import com.dingding.open.achelous.kafka.support.KafkaPluginTypes;
 import com.dingding.open.achelous.worker.MessageWorker;
 import com.dingding.open.achelous.worker.WorkerFactory;
@@ -42,7 +42,7 @@ import com.dingding.open.achelous.worker.WorkerFactory;
  * @date Oct 27, 2015
  */
 @PluginName(KafkaPluginTypes.KAFKA_CONSUMER)
-public class KafkaConsumerPlugin extends AbstractPlugin<KafkaContext> {
+public class KafkaConsumerPlugin extends AbstractPlugin {
 
     private static final Logger logger = Logger.getLogger(KafkaConsumerPlugin.class);
 
@@ -52,21 +52,9 @@ public class KafkaConsumerPlugin extends AbstractPlugin<KafkaContext> {
     private static final ConfigConstant CONF_STREAMS = new ConfigConstant("streams", "1");
     private static final ConfigConstant CONF_WORKER = new ConfigConstant("worker", "");
 
-    @Override
-    public void onError(Iterator<Invoker> invokers, KafkaContext context, Throwable t) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onCompleted(Iterator<Invoker> invokers, KafkaContext context) {
-        // TODO Auto-generated method stub
-
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
-    public void doWork(Iterator<Invoker> invokers, final KafkaContext context, Map<String, String> config) {
+    public void doWork(Iterator<Invoker> invokers, final Context context, Map<String, String> config) throws Throwable {
         if (exhaust()) {
             Properties props = new Properties();
             PropertiesUtils.put(props, "zookeeper.connect", CONF_ZKCONFIG, config);

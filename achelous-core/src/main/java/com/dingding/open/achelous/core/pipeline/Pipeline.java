@@ -21,7 +21,7 @@ public interface Pipeline {
      * 
      * @param plugins plugin集合
      */
-    void bagging(List<Plugin> plugins);
+    <T extends Plugin> void bagging(List<T> plugins);
 
     /**
      * 拼装实时pipeline
@@ -35,4 +35,6 @@ public interface Pipeline {
      * 执行函数
      */
     void call();
+
+    void schedule(Context context);
 }

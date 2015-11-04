@@ -12,12 +12,14 @@
 		<module>achelous-core</module>
 		<module>achelous-seda</module>
 		<module>achelous-kafka</module>
+		<module>achelous-fluent</module>
 	</modules>
 
 	<properties>
 		<achelous.core.version>1.0.0-SNAPSHOT</achelous.core.version>
 		<achelous.seda.version>1.0.0-SNAPSHOT</achelous.seda.version>
 		<achelous.kafka.version>1.0.0-SNAPSHOT</achelous.kafka.version>
+		<achelous.fluent.version>1.0.0-SNAPSHOT</achelous.fluent.version>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		<spring.version>4.1.6.RELEASE</spring.version>
 		<jdk.version>1.7</jdk.version>
@@ -29,6 +31,11 @@
 				<groupId>com.dingding</groupId>
 				<artifactId>achelous-core</artifactId>
 				<version>${achelous.core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dingding</groupId>
+				<artifactId>achelous-fluent</artifactId>
+				<version>${achelous.fluent.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.dingding</groupId>

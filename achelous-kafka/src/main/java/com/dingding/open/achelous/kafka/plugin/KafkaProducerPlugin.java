@@ -16,7 +16,9 @@ import org.apache.log4j.Logger;
 import com.dingding.open.achelous.core.invoker.Invoker;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
+import com.dingding.open.achelous.core.support.CallbackType;
 import com.dingding.open.achelous.core.support.ConfigConstant;
+import com.dingding.open.achelous.core.support.Context;
 import com.dingding.open.achelous.core.support.PropertiesUtils;
 import com.dingding.open.achelous.kafka.support.KafkaContext;
 import com.dingding.open.achelous.kafka.support.KafkaPluginTypes;
@@ -28,7 +30,7 @@ import com.dingding.open.achelous.kafka.support.KafkaPluginTypes;
  * @date Oct 27, 2015
  */
 @PluginName(KafkaPluginTypes.KAFKA_PRODUCER)
-public class KafkaProducerPlugin extends AbstractPlugin<KafkaContext> {
+public class KafkaProducerPlugin extends AbstractPlugin {
 
     private static final Logger logger = Logger.getLogger(KafkaProducerPlugin.class);
 
@@ -38,8 +40,9 @@ public class KafkaProducerPlugin extends AbstractPlugin<KafkaContext> {
 
     private static final String CACHE_PRODUCER = "producer";
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public void doWork(Iterator<Invoker> invokers, KafkaContext context, Map<String, String> config) {
+    public void doWork(Iterator<Invoker> invokers, Context context, Map<String, String> config) throws Throwable {
 
         // need unique msgid.
         logger.info("[ACHELOUS]kafka producer plugin begin to process data...");
@@ -55,22 +58,32 @@ public class KafkaProducerPlugin extends AbstractPlugin<KafkaContext> {
             logger.info("[ACHELOUS]kafka producer plugin finish initialization");
         }
 
-        // TODO 容错策略
         String topic = config.get(CONF_TOPIC.getName());
         KafkaProducer producer = getCache(CacheLevel.PIPELINE_PLUGIN, CACHE_PRODUCER);
-        producer.send(new ProducerRecord(topic,
-                context.getKey(), context.getValue()));
+
+        KafkaContext realContext = (KafkaContext) context.getContextMap().get("kafka");
+
+        // 容错策略由Failover plugin接管
+        try {
+            producer.send(new ProducerRecord(topic,
+                    realContext.getKey(), realContext.getValue())).get();
+        } catch (Throwable t) {
+            logger.error("[ACHELOUS]kafka producer found catchable exception.");
+            throw t;
+        }
 
     }
 
     @Override
-    public void onError(Iterator<Invoker> invokers, KafkaContext context, Throwable t) {
-        logger.error("[ACHELOUS]kafka producer error occur.", t);
-    }
+    public void onCallBack(CallbackType type, Iterator<Invoker> invokers, Context context) {
+        switch (type) {
+            case ERROR:
+                logger.error("[ACHELOUS]error occur, now begin to log message into db.");
+                break;
 
-    @Override
-    public void onCompleted(Iterator<Invoker> invokers, KafkaContext context) {
-        logger.info("[ACHELOUS]kafka producer finished.");
+            default:
+                break;
+        }
     }
 
 }

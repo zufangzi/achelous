@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.dingding.open.achelous.core.invoker.Invoker;
 import com.dingding.open.achelous.core.plugin.Plugin;
+import com.dingding.open.achelous.core.support.CallbackType;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
@@ -24,7 +25,8 @@ public class DftPipeline implements Pipeline {
 
     private static final ThreadLocal<List<Invoker>> invokers = new ThreadLocal<List<Invoker>>();
 
-    public void bagging(List<Plugin> plugins) {
+    @Override
+    public <T extends Plugin> void bagging(List<T> plugins) {
         this.plugins.addAll(plugins);
     }
 
@@ -48,8 +50,8 @@ public class DftPipeline implements Pipeline {
                     now.onNext(iterator, context);
                     now.onCompleted(iterator, context);
                 } catch (Throwable t) {
-                    t.printStackTrace();
                     now.onError(iterator, context, t);
+                    throw new RuntimeException(t);
                 }
             }
 
@@ -63,6 +65,11 @@ public class DftPipeline implements Pipeline {
             public boolean isNeedSkip() {
                 // TODO Auto-generated method stub
                 return false;
+            }
+
+            @Override
+            public void callback(CallbackType type, Iterator<Invoker> iterator) {
+                now.onCallBack(type, iterator, context);
             }
         };
         invokers.get().add(invoker);
@@ -78,4 +85,10 @@ public class DftPipeline implements Pipeline {
         }
         invokers.remove();
     }
+
+    @Override
+    public void schedule(Context context) {
+        combine(context).call();
+    }
+
 }

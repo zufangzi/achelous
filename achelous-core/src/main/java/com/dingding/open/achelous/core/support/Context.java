@@ -15,8 +15,35 @@ import java.util.Map;
  */
 public class Context {
 
+    private Map<String, Integer> pluginName2RepeatCounter = new HashMap<String, Integer>();
     private Map<String, Map<String, String>> plugin2ConfigMap = new HashMap<String, Map<String, String>>();
     private String pipelineName;
+    private String attach;
+    private Map<String, Object> contextMap = new HashMap<String, Object>();
+
+    public Map<String, Integer> getPluginName2RepeatCounter() {
+        return pluginName2RepeatCounter;
+    }
+
+    public void setPluginName2RepeatCounter(Map<String, Integer> pluginName2RepeatCounter) {
+        this.pluginName2RepeatCounter = pluginName2RepeatCounter;
+    }
+
+    public String getAttach() {
+        return attach;
+    }
+
+    public void setAttach(String attach) {
+        this.attach = attach;
+    }
+
+    public Map<String, Object> getContextMap() {
+        return contextMap;
+    }
+
+    public void setContextMap(Map<String, Object> contextMap) {
+        this.contextMap = contextMap;
+    }
 
     public String getPipelineName() {
         return pipelineName;

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
+import com.dingding.open.achelous.core.support.CommonPluginTypes;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
@@ -33,9 +34,9 @@ public class ParrelPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void doWork(Iterator invokers, Context context, Map config) {
-        // TODO Auto-generated method stub
-
+    public void doWork(Iterator invokers, Context context, Map config) throws Throwable {
+        System.out.println("say hi");
+        throw new RuntimeException();
     }
 
 }

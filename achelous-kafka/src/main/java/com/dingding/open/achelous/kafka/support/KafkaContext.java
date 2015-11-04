@@ -4,15 +4,13 @@
  */
 package com.dingding.open.achelous.kafka.support;
 
-import com.dingding.open.achelous.core.support.Context;
-
 /**
  * plugin执行过程中的上下文封装。
  * 
  * @author surlymo
  * @date Oct 27, 2015
  */
-public class KafkaContext extends Context {
+public class KafkaContext {
     private String key;
     private Object value;
 
