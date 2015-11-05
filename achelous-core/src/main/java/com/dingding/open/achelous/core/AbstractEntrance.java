@@ -16,7 +16,8 @@ public abstract class AbstractEntrance {
 
     protected Logger logger = Logger.getLogger(this.getClass());
 
-    protected AbstractEntrance(String pluginPath) {
-        PipelineManager.checkPluginPath(pluginPath);
+    protected AbstractEntrance() {
+        PluginPath pluginPath = this.getClass().getAnnotation(PluginPath.class);
+        PipelineManager.checkPluginPath(pluginPath.value());
     }
 }

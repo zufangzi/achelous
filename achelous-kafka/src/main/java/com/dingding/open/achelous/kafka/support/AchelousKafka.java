@@ -6,6 +6,7 @@ package com.dingding.open.achelous.kafka.support;
 
 import com.dingding.open.achelous.core.AbstractEntrance;
 import com.dingding.open.achelous.core.PipelineManager;
+import com.dingding.open.achelous.core.PluginPath;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
@@ -14,14 +15,11 @@ import com.dingding.open.achelous.core.support.Context;
  * @author surlymo
  * @date Oct 29, 2015
  */
+@PluginPath("com.dingding.open.achelous.kafka.plugin")
 public class AchelousKafka extends AbstractEntrance {
     private static final PipelineManager manager = new PipelineManager();
 
     public static final AchelousKafka INSTANCE = new AchelousKafka();
-
-    private AchelousKafka() {
-        super("com.dingding.open.achelous.kafka.plugin");
-    }
 
     public void init() {
         logger.info("[ACHELOUS]initialization finished...");

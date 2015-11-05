@@ -2,7 +2,7 @@
  * DingDing.com Inc.
  * Copyright (c) 2000-2016 All Rights Reserved.
  */
-package com.dingding.open.achelous.core.plugin;
+package com.dingding.open.achelous.core;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,9 +14,9 @@ import java.lang.annotation.RetentionPolicy;
  * @date Oct 27, 2015
  */
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface PluginName {
+public @interface PluginPath {
     /**
-     * 插件路径
+     * 插件名
      * 
      * @return String
      */

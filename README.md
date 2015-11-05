@@ -4,16 +4,22 @@
 achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的开发场景中，服务端上无数的数据流向各个服务，触发各种分支，面临着非常复杂的场景，服务的搭建、优化和治理一直是一个难题。顾名思义，该系统也即旨在为服务开发与治理提供一些辅助手段，以期规避一些常规问题，并优化产能。
 
 ##Introdution
-1. achelous是一套基于核心插件框架的服务治理系统，他的核心思想是通过微核+插件化的体系结构，结合响应式函数编程或者配置化编程，以期望java客户端/服务端开发中的一些问题进行抽象和简化。
-2. 你可以通过XML/Properties/API方式来声明每个阶段的处理逻辑。每个阶段即一个插件。遵循“插件即服务”（plugin-as-service）的原则。
-3. achelous旨在对开发中常常面临的多线程编程、异步调度、热插拔、开关、abtest、降级、容错、熔断等提供帮助，并对所有的插件运行现状进行统一监控管理。
-4. 除此之外，后期achelous也会在rpc框架、系统监控报警与反馈等方面提供一些功能和优化。
++ achelous是一套基于核心插件框架的服务治理系统，他的核心思想是通过微核+插件化的体系结构，结合响应式函数编程或者配置化编程，以期望java客户端/服务端开发中的一些问题进行抽象和简化。
++ 你可以通过XML/Properties/API方式来声明每个阶段的处理逻辑。每个阶段即一个插件。遵循“插件即服务”（plugin-as-service）的原则。
++ achelous旨在对开发中常常面临的多线程编程、异步调度、热插拔、开关、abtest、降级、容错、熔断等提供帮助，并对所有的插件运行现状进行统一监控管理。
++ 除此之外，后期achelous也会在rpc框架、系统监控报警与反馈等方面提供一些功能和优化。
 
 ## Modules 
-1. achelous-core提供系统核心的插件定义和组装功能。以及一些通用的插件实现。
-2. achelous-seda提供SEDA（阶段性事件处理架构）的一个抽象实现。主要用于异步调度场景。
-3. achelous-fluent提供通用的响应式函数编程API。
-4. achelous-kafka提供基于kafka的seda实现。
++ achelous-core提供系统核心的插件定义和组装功能。以及一些通用的插件实现。
++ achelous-seda提供SEDA（阶段性事件处理架构）的一个抽象实现。主要用于异步调度场景。
++ achelous-fluent提供通用的响应式函数编程API。
++ achelous-kafka提供基于kafka的seda实现。
+
+## Todo Recently
++ plugin和worker对Spring的全面支持
++ kafka生产者消费者plugin完善
++ seda模块对msgid进行支持
++ msg定时plugin开发
 
 ##Changelog
 
