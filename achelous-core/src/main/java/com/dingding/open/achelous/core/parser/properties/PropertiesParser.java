@@ -30,7 +30,7 @@ import com.dingding.open.achelous.core.support.Suite;
 public class PropertiesParser implements Parser {
 
     private static final Logger logger = Logger.getLogger(PropertiesParser.class);
-    private static final String FILENAME = "seda.properties";
+    private static final String FILENAME = "achelous.properties";
     private static final Set<SortedUnuniqueKey> keyValus = new LinkedHashSet<SortedUnuniqueKey>();
 
     private static final String GLOBAL_CONFIG_PREFIX = "global";

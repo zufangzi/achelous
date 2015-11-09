@@ -4,11 +4,12 @@
  */
 package com.dingding.open.achelous.common.failover;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.invoker.Invoker;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
@@ -22,6 +23,7 @@ import com.dingding.open.achelous.core.support.Context;
  * @author surlymo
  * @date Nov 4, 2015
  */
+@Component
 @PluginName(CommonPluginTypes.FAIL_RETRY)
 public class RetryPlugin extends AbstractPlugin {
 
@@ -41,7 +43,7 @@ public class RetryPlugin extends AbstractPlugin {
     private static final Logger logger = Logger.getLogger(RetryPlugin.class);
 
     @Override
-    public void doWork(Iterator<Invoker> invokers, Context context, Map<String, String> config) throws Throwable {
+    public Object doWork(InvokerCore core, Context context, Map<String, String> config) throws Throwable {
         String attach = attachConfig;
         int totalCnt = 0;
         long sleep = 0L;
@@ -56,12 +58,12 @@ public class RetryPlugin extends AbstractPlugin {
             sleep = Long.valueOf(config.get("sleep"));
         }
 
-        Invoker invoker = invokers.next();
+        Invoker invoker = core.nextN(1);
         int retryTimes = totalCnt;
         boolean isOk = false;
         while (retryTimes-- >= 0) {
             try {
-                invoker.invoke(invokers);
+                invoker.invoke(core);
                 isOk = true;
                 break;
             } catch (Throwable t) {
@@ -80,8 +82,9 @@ public class RetryPlugin extends AbstractPlugin {
         }
 
         if (!isOk) {
-            invoker.callback(CallbackType.ERROR, invokers);
+            invoker.callback(CallbackType.ERROR, core);
         }
+        return null;
     }
 
 }

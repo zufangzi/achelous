@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
 import com.dingding.open.achelous.core.parser.properties.PropertiesParser;
@@ -29,6 +32,7 @@ import com.dingding.open.achelous.core.support.Suite;
  * @author surlymo
  * @date Oct 27, 2015
  */
+@Component
 public class PipelineManager {
 
     private static final Map<String, Pipeline> pipelinePool = new HashMap<String, Pipeline>();
@@ -50,9 +54,7 @@ public class PipelineManager {
 
     private static volatile AtomicBoolean defaultPipelineSwitch = new AtomicBoolean(false);
 
-    static {
-        coreInit(null);
-    }
+    private static volatile AtomicBoolean coreInitSwitch = new AtomicBoolean(false);
 
     private static Pipeline getPipeline(String name) {
         return pipelinePool.get(name);
@@ -61,7 +63,11 @@ public class PipelineManager {
     /**
      * 进行核心的初始化工作
      */
-    private static synchronized void coreInit(String coreConfigFilePath) {
+    public synchronized void coreInit(ApplicationContext context) {
+
+        if (!coreInitSwitch.compareAndSet(false, true)) {
+            return;
+        }
 
         if (parser == null) {
             parser = new PropertiesParser();
@@ -73,7 +79,18 @@ public class PipelineManager {
         // 进行全部参数的处理
         globalConfigProcess(coreConfig.getGlobalConfig());
 
+        // 对所有非spring管理的plugin进行初始化
         initByPath(DEFAULT_PLUGIN_PATH);
+
+        // 对spring-based的plugin bean进行加载。
+        if (context != null) {
+            Map<String, Plugin> plugins = context.getBeansOfType(Plugin.class);
+            if (plugins != null && !plugins.isEmpty()) {
+                for (Plugin plugin : plugins.values()) {
+                    pluginMap.put(plugin.getClass().getAnnotation(PluginName.class).value(), plugin);
+                }
+            }
+        }
 
         bagging();
     }
@@ -155,21 +172,14 @@ public class PipelineManager {
                 continue;
             }
 
-            Plugin plugin = null;
-            try {
-                plugin = (Plugin) Class.forName(prefix + "." + str.split("\\.")[0]).newInstance();
-            } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Plugin plugin = Factory.getEntity(prefix + "." + str.split("\\.")[0]);
+            // 此处该判断暂时不打开。
+            // if (plugin.getClass().getAnnotation(Component.class) == null) {
             PluginName name = plugin.getClass().getAnnotation(PluginName.class);
-            pluginMap.put(name.value(), plugin);
+            if (pluginMap.get(name.value()) == null) {
+                pluginMap.put(name.value(), plugin);
+            }
+            // }
         }
     }
 
@@ -194,11 +204,12 @@ public class PipelineManager {
         }
     }
 
-    public static void call(Context context) {
+    public void call(Context context) {
         call(defaultPipeline, context);
     }
 
-    public static void call(String pipeline, Context context) {
+    public void call(String pipeline, Context context) {
+        // coreInit(null);
         Pipeline pipe = getPipeline(pipeline);
         context.setPipelineName(pipeline);
         context.setPlugin2ConfigMap(suite2Plugin2FeatureMap.get(pipeline));

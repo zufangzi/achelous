@@ -16,6 +16,11 @@ import com.dingding.open.achelous.core.support.Context;
  * @date Oct 27, 2015
  */
 public interface Pipeline {
+
+    public enum PipelineState {
+        END, OK, ERROR
+    }
+
     /**
      * plugin打包与初始化
      * 

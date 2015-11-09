@@ -4,8 +4,9 @@
  */
 package com.dingding.open.achelous.kafka.support;
 
+import org.springframework.stereotype.Component;
+
 import com.dingding.open.achelous.core.AbstractEntrance;
-import com.dingding.open.achelous.core.PipelineManager;
 import com.dingding.open.achelous.core.PluginPath;
 import com.dingding.open.achelous.core.support.Context;
 
@@ -15,11 +16,20 @@ import com.dingding.open.achelous.core.support.Context;
  * @author surlymo
  * @date Oct 29, 2015
  */
+@Component
 @PluginPath("com.dingding.open.achelous.kafka.plugin")
 public class AchelousKafka extends AbstractEntrance {
-    private static final PipelineManager manager = new PipelineManager();
 
-    public static final AchelousKafka INSTANCE = new AchelousKafka();
+    public AchelousKafka() {
+        super();
+    }
+
+    private AchelousKafka(boolean flag) {
+        super(flag);
+    }
+
+    // 非spring调用时候使用
+    public static final AchelousKafka INSTANCE = new AchelousKafka(true);
 
     public void init() {
         logger.info("[ACHELOUS]initialization finished...");

@@ -4,7 +4,6 @@
  */
 package com.dingding.open.achelous.kafka.plugin;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,8 +11,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
-import com.dingding.open.achelous.core.invoker.Invoker;
+import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.CallbackType;
@@ -29,6 +29,7 @@ import com.dingding.open.achelous.kafka.support.KafkaPluginTypes;
  * @author surlymo
  * @date Oct 27, 2015
  */
+@Component
 @PluginName(KafkaPluginTypes.KAFKA_PRODUCER)
 public class KafkaProducerPlugin extends AbstractPlugin {
 
@@ -42,7 +43,7 @@ public class KafkaProducerPlugin extends AbstractPlugin {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public void doWork(Iterator<Invoker> invokers, Context context, Map<String, String> config) throws Throwable {
+    public Object doWork(InvokerCore core, Context context, Map<String, String> config) throws Throwable {
 
         // need unique msgid.
         logger.info("[ACHELOUS]kafka producer plugin begin to process data...");
@@ -71,11 +72,11 @@ public class KafkaProducerPlugin extends AbstractPlugin {
             logger.error("[ACHELOUS]kafka producer found catchable exception.");
             throw t;
         }
-
+        return null;
     }
 
     @Override
-    public void onCallBack(CallbackType type, Iterator<Invoker> invokers, Context context) {
+    public void onCallBack(CallbackType type, InvokerCore core, Context context) {
         switch (type) {
             case ERROR:
                 logger.error("[ACHELOUS]error occur, now begin to log message into db.");

@@ -4,13 +4,13 @@
  */
 package com.dingding.open.achelous.core.plugin;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.cache.HierarchicalCache;
-import com.dingding.open.achelous.core.invoker.Invoker;
+import com.dingding.open.achelous.core.pipeline.Pipeline.PipelineState;
 import com.dingding.open.achelous.core.support.CallbackType;
 import com.dingding.open.achelous.core.support.Context;
 
@@ -85,7 +85,7 @@ public abstract class AbstractPlugin implements Plugin {
     }
 
     @Override
-    public void onNext(Iterator<Invoker> invokers, Context context) throws Throwable {
+    public PipelineState onNext(InvokerCore core, Context context) throws Throwable {
         if (HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE) == null) {
             HierarchicalCache.setLevel3CacheKey(CACHE_PIPELINE, context.getPipelineName());
         }
@@ -97,22 +97,30 @@ public abstract class AbstractPlugin implements Plugin {
             count = ++oldValue;
             context.getPluginName2RepeatCounter().put(pluginName, count);
         }
-
-        doWork(invokers, context, context.initPluginsConfig(pluginName + count));
+        Map<String, String> ctMap = context.initPluginsConfig(pluginName + count);
+        if (ctMap == null) {
+            ctMap = context.initPluginsConfig(pluginName + 1);
+        }
+        Object rst = doWork(core, context, ctMap);
+        if (rst == null) {
+            return PipelineState.END;
+        }
+        context.getResult().set(rst);
+        return PipelineState.OK;
     }
 
     @Override
-    public void onCallBack(CallbackType type, Iterator<Invoker> invokers, Context context) {
+    public void onCallBack(CallbackType type, InvokerCore core, Context context) {
 
     }
 
     @Override
-    public void onError(Iterator<Invoker> invokers, Context context, Throwable t) {
+    public void onError(InvokerCore core, Context context, Throwable t) {
 
     }
 
     @Override
-    public void onCompleted(Iterator<Invoker> invokers, Context context) {
+    public void onCompleted(InvokerCore core, Context context) {
 
     }
 
@@ -121,6 +129,6 @@ public abstract class AbstractPlugin implements Plugin {
         attachConfig = attach;
     }
 
-    public abstract void doWork(Iterator<Invoker> invokers, Context context, Map<String, String> config)
+    public abstract Object doWork(InvokerCore core, Context context, Map<String, String> config)
             throws Throwable;
 }

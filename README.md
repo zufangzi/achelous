@@ -23,6 +23,10 @@ achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的�
 
 ##Changelog
 
+**v0.7** —— **2015-11-09**
++ plugin以及worker对spring提供支持
++ 提供通用异步plugin。病对kafkaConsumer的三个阶段进行改造。
+
 **v0.6** —— **2015-11-04**
 + 新增achelous-fluent工程。提供响应式API。
 + achelous核心框架进行大规模修改，适应pipeline里多个相同plugin的case等场景。

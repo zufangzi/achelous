@@ -1,4 +1,4 @@
-package com.dingding.open.achelous.worker;
+package com.dingding.open.achelous.core;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WorkerFactory implements ApplicationContextAware {
+public class Factory implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
@@ -14,27 +14,26 @@ public class WorkerFactory implements ApplicationContextAware {
         SPRING, NON_SPRING
     };
 
-    @SuppressWarnings("rawtypes")
-    public static MessageWorker getWorker(String name) {
+    public static <M> M getEntity(String name) {
         if (name.contains(".")) {
-            return getWorker(Type.NON_SPRING, name);
+            return getEntity(Type.NON_SPRING, name);
         } else {
-            return getWorker(Type.SPRING, name);
+            return getEntity(Type.SPRING, name);
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public static MessageWorker getWorker(Type type, String name) {
+    @SuppressWarnings("unchecked")
+    public static <M> M getEntity(Type type, String name) {
         switch (type) {
             case NON_SPRING:
                 try {
-                    return (MessageWorker) Class.forName(name).newInstance();
+                    return (M) Class.forName(name).newInstance();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case SPRING:
-                return (MessageWorker) applicationContext.getBean(name);
+                return (M) applicationContext.getBean(name);
             default:
                 break;
         }
