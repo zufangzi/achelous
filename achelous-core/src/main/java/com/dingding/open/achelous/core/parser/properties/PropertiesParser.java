@@ -48,6 +48,7 @@ public class PropertiesParser implements Parser {
     }
 
     private static void init() {
+        // TODO 多maven工程下的配置管理？
         Properties prop = new OrderProperties();
         InputStream input = ClassLoader.getSystemResourceAsStream(FILENAME);
         try {
