@@ -25,6 +25,12 @@ import com.dingding.open.achelous.kafka.support.KafkaContext;
 import com.dingding.open.achelous.kafka.support.KafkaPluginTypes;
 import com.dingding.open.achelous.worker.MessageWorker;
 
+/**
+ * kafka通用消费者处理插件
+ * 
+ * @author surlymo
+ * @date Nov 10, 2015
+ */
 @PluginName(KafkaPluginTypes.KAFKA_PROC)
 public class KafkaComProcessorPlugin extends AbstractPlugin {
 

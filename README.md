@@ -21,7 +21,10 @@ achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的�
 + seda模块对msgid进行支持
 + msg定时plugin开发
 
-##Changelog
+## Contact Us
+inf@zufangit.cn
+
+## Changelog
 
 **v0.7** —— **2015-11-09**
 + plugin以及worker对spring提供支持

@@ -1,3 +1,7 @@
+/**
+ * DingDing.com Inc.
+ * Copyright (c) 2000-2016 All Rights Reserved.
+ */
 package com.dingding.open.achelous.common.parrel;
 
 import java.util.List;
@@ -16,6 +20,12 @@ import com.dingding.open.achelous.core.support.CommonPluginTypes;
 import com.dingding.open.achelous.core.support.ConfigConstant;
 import com.dingding.open.achelous.core.support.Context;
 
+/**
+ * 异步调度插件
+ * 
+ * @author surlymo
+ * @date Nov 10, 2015
+ */
 @PluginName(CommonPluginTypes.ASYNC_LIST_SCHEDULER)
 public class AsyncListSchedulersPlugin extends AbstractPlugin {
 
