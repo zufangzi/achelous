@@ -89,8 +89,10 @@ public class AsyncListSchedulersPlugin extends AbstractPlugin {
             int size = core.getInvokers().size();
             logger.info("[ACHELOUS]Thread: " + Thread.currentThread().getName() + " current index is: " + currentIndex);
             for (int i = currentIndex + 1; i < size; i++) {
-                // 确保不会出现多线程问题
+                // 确保不会出现多线程问题。
                 core.getInvokers().get(i).invoke(core);
+                // 回滚游标。确保从头再来一遍
+                core.getCurrentIndex().set(core.getCurrentIndex().get() - 1);
             }
         }
     }

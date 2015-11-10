@@ -42,7 +42,6 @@ public class AchelousKafkaTest {
             e.printStackTrace();
             Assert.fail();
         }
-
     }
 
     @Test

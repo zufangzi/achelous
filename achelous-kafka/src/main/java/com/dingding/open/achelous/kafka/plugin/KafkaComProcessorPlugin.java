@@ -6,6 +6,7 @@ package com.dingding.open.achelous.kafka.plugin;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 import kafka.consumer.ConsumerIterator;
@@ -51,23 +52,29 @@ public class KafkaComProcessorPlugin extends AbstractPlugin {
 
         KafkaStream<byte[], byte[]> stream = (KafkaStream<byte[], byte[]>) context.getResult().get();
         ConsumerIterator<byte[], byte[]> it = stream.iterator();
+        int current = core.getCurrentIndex().get();
         while (it.hasNext()) {
             MessageAndMetadata<byte[], byte[]> data = it.next();
-            KafkaContext kafkaContext = null;
+            List<KafkaContext> kafkaContexts = null;
             if (clazz.isAssignableFrom(String.class)) {
-                kafkaContext = (KafkaContext) worker.proc(new String(data.message()));
+                kafkaContexts = (List<KafkaContext>) worker.proc(new String(data.message()));
             } else if (clazz.isAssignableFrom(Integer.class)) {
-                kafkaContext = (KafkaContext) worker.proc(Integer.valueOf(new String(data.message())));
+                kafkaContexts = (List<KafkaContext>) worker.proc(Integer.valueOf(new String(data.message())));
             } else {
-                kafkaContext = (KafkaContext) worker.proc(JSON.parseObject(data.message(), clazz));
+                System.out.println(new String(data.message()));
+                kafkaContexts = (List<KafkaContext>) worker.proc(JSON.parseObject(data.message(), clazz));
             }
-            context.getContextMap().put("kafka", kafkaContext);
 
-            if (core.getCurrentIndex().get() < core.getInvokers().size() - 1) {
-                core.nextNFromM(core.getCurrentIndex().get(), 1, false).invoke(core);
-            } else {
+            for (KafkaContext meta : kafkaContexts) {
+                context.getContextMap().put("kafka", meta);
+                for (int tmpCurrent = current; tmpCurrent < core.getInvokers().size() - 1; tmpCurrent++) {
+                    System.out.println("now in.....");
+                    core.nextNFromM(tmpCurrent, 1, false).invoke(core);
+                }
                 logger.info("[ACHELOUS]not next plugin");
+
             }
+
         }
         logger.info("[ACHELOUS]Shutting down Thread: " + Thread.currentThread().getName());
         return null;
