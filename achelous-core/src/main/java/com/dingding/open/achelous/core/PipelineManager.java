@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -56,6 +58,13 @@ public class PipelineManager {
 
     private static volatile AtomicBoolean coreInitSwitch = new AtomicBoolean(false);
 
+    /**
+     * 以下都是plugin+pipeline级别可以前置的一些变量存放.
+     */
+    public static final Map<String, ReentrantLock> locks = new ConcurrentHashMap<String, ReentrantLock>();
+    public static final Map<String, Boolean> exhaustFlags = new ConcurrentHashMap<String, Boolean>();
+    public static final Map<String, AtomicBoolean> mutexs = new ConcurrentHashMap<String, AtomicBoolean>();
+
     private static Pipeline getPipeline(String name) {
         return pipelinePool.get(name);
     }
@@ -65,6 +74,7 @@ public class PipelineManager {
      */
     public synchronized void coreInit(ApplicationContext context) {
 
+        // sychronized确保其他初始化线程阻塞。此处再来判断是否初始化过。
         if (!coreInitSwitch.compareAndSet(false, true)) {
             return;
         }
@@ -79,7 +89,7 @@ public class PipelineManager {
         // 进行全部参数的处理
         globalConfigProcess(coreConfig.getGlobalConfig());
 
-        // 对所有非spring管理的plugin进行初始化
+        // 对所有通用的plugin进行初始化
         initByPath(DEFAULT_PLUGIN_PATH);
 
         // 对spring-based的plugin bean进行加载。
@@ -119,9 +129,13 @@ public class PipelineManager {
                     pluginRepeatTimeMap.put(meta.getPluginName(), sequence);
                 }
 
+                // TODO 多pipeline下会覆盖
                 Plugin plugin = pluginMap.get(meta.getPluginName()).init(suite.getName());
                 plugins.add(plugin);
                 pluginsFeatureMap.put(meta.getPluginName() + sequence, meta.getFeature2ValueMap());
+                locks.put(suite.getName() + meta.getPluginName(), new ReentrantLock());
+                exhaustFlags.put(suite.getName() + meta.getPluginName(), false);
+                mutexs.put(suite.getName() + meta.getPluginName(), new AtomicBoolean(false));
             }
             pipeline.bagging(plugins);
 
@@ -151,8 +165,7 @@ public class PipelineManager {
      * @param path
      */
     private static void initByPath(String path) {
-        String initPath =
-                PipelineManager.class.getClassLoader().getResource(path.replace(".", "/")).getPath();
+        String initPath = PipelineManager.class.getClassLoader().getResource(path.replace(".", "/")).getPath();
         initPath = initPath.replace("/", File.separator);
 
         File file = new File(initPath);
@@ -214,6 +227,17 @@ public class PipelineManager {
         context.setPipelineName(pipeline);
         context.setPlugin2ConfigMap(suite2Plugin2FeatureMap.get(pipeline));
         pipe.combine(context).call();
+    }
+
+    public void addDefaultConfig(String pluginName, String feature, String value) {
+        for (String pipelineKey : suite2Plugin2FeatureMap.keySet()) {
+            Map<String, Map<String, String>> pluginValus = suite2Plugin2FeatureMap.get(pipelineKey);
+            for (String pluginKey : pluginValus.keySet()) {
+                if (pluginKey.contains(pluginName) && !pluginValus.get(pluginKey).containsKey(feature)) {
+                    pluginValus.get(pluginKey).put(feature, value);
+                }
+            }
+        }
     }
 
 }

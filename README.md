@@ -16,15 +16,22 @@ achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的�
 + achelous-kafka提供基于kafka的seda实现。
 
 ## Todo Recently
-+ plugin和worker对Spring的全面支持
-+ kafka生产者消费者plugin完善
 + seda模块对msgid进行支持
 + msg定时plugin开发
++ 带补充
 
 ## Contact Us
 inf@zufangit.cn
 
 ## Changelog
+
+**v0.8** —— **2015-12-25**
++ 对锁逻辑进行优化升级.性能提升.
++ Async plugin优化.增加cooker.与其他plugin解耦.
++ 增加@FilePath和@DefaultProps注解.来指定配置路径以及默认配置项.并将其与plugin解耦.
++ 对于Spring进行深度支持.
++ 对kafka进行深入封装.
++ 修复多单线程多pipeline的bug
 
 **v0.7** —— **2015-11-09**
 + plugin以及worker对spring提供支持

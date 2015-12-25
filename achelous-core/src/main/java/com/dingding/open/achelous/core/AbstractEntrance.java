@@ -34,21 +34,45 @@ public abstract class AbstractEntrance implements ApplicationContextAware {
     private void init(boolean flag) {
         if (flag || this.getClass().getAnnotation(Component.class) == null) {
             manager = new PipelineManager();
-            manager.coreInit(null);
-            PluginPath pluginPath = this.getClass().getAnnotation(PluginPath.class);
-            PipelineManager.checkPluginPath(pluginPath.value());
+            coreInit(null);
         }
     }
 
+    @SuppressWarnings("unused")
     @Autowired
     private Factory factory;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         manager = Factory.getEntity("pipelineManager");
-        manager.coreInit(applicationContext);
-        PluginPath pluginPath = this.getClass().getAnnotation(PluginPath.class);
-        PipelineManager.checkPluginPath(pluginPath.value());
+        coreInit(applicationContext);
+    }
 
+    private void coreInit(ApplicationContext context) {
+        FilePath filePath = this.getClass().getAnnotation(FilePath.class);
+        if (filePath != null) {
+            System.setProperty("file_name", filePath.value());
+        }
+        manager.coreInit(context);
+        PluginPath pluginPath = this.getClass().getAnnotation(PluginPath.class);
+        if (pluginPath != null) {
+            PipelineManager.checkPluginPath(pluginPath.value());
+        }
+        getDefaultProps();
+    }
+
+    private void getDefaultProps() {
+        DefaultProps props = this.getClass().getAnnotation(DefaultProps.class);
+        if (props == null) {
+            return;
+        }
+        String[] args = props.value();
+        for (String arg : args) {// 格式为 "aysnc.cooker=xxx.xx.xx.xxCooker "
+            String key = arg.split("=")[0];
+            String value = arg.split("=")[1];
+            String pluginName = key.split("\\.")[0];
+            String pluginFeature = key.split("\\.")[1];
+            manager.addDefaultConfig(pluginName, pluginFeature, value);
+        }
     }
 }

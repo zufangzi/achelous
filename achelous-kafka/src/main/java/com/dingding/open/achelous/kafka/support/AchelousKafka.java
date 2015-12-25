@@ -7,17 +7,24 @@ package com.dingding.open.achelous.kafka.support;
 import org.springframework.stereotype.Component;
 
 import com.dingding.open.achelous.core.AbstractEntrance;
+import com.dingding.open.achelous.core.DefaultProps;
+import com.dingding.open.achelous.core.FilePath;
 import com.dingding.open.achelous.core.PluginPath;
 import com.dingding.open.achelous.core.support.Context;
 
 /**
- * seda框架的kafka实现入口。集成发布消息、消费消息、核心处理的功能与入口
+ * <pre>
+ * seda框架的kafka实现入口。集成发布消息、消费消息、核心处理的功能与入口 
+ * DefaultProps注解只能在应用层声明.在plugin声明是不准确的. 因为可能存在对plugin的不同用法
+ * </pre>
  * 
  * @author surlymo
  * @date Oct 29, 2015
  */
 @Component
 @PluginPath("com.dingding.open.achelous.kafka.plugin")
+@FilePath("kafka.properties")
+@DefaultProps({ "async.cooker=com.dingding.open.achelous.kafka.support.KafkaAsyancCooker" })
 public class AchelousKafka extends AbstractEntrance {
 
     public AchelousKafka() {
@@ -30,10 +37,6 @@ public class AchelousKafka extends AbstractEntrance {
 
     // 非spring调用时候使用
     public static final AchelousKafka INSTANCE = new AchelousKafka(true);
-
-    public void init() {
-        logger.info("[ACHELOUS]initialization finished...");
-    }
 
     public void pub(Object value) {
         manager.call(fillPubBaseContext("", value));

@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.dingding.open.achelous.core.parser.CoreConfig;
@@ -30,16 +31,19 @@ import com.dingding.open.achelous.core.support.Suite;
 public class PropertiesParser implements Parser {
 
     private static final Logger logger = Logger.getLogger(PropertiesParser.class);
-    private static final String FILENAME = "achelous.properties";
+    private static String FILENAME = "achelous.properties";
     private static final Set<SortedUnuniqueKey> keyValus = new LinkedHashSet<SortedUnuniqueKey>();
 
     private static final String GLOBAL_CONFIG_PREFIX = "global";
     private static final String SUITE_STAGE_FLAG = "stage";
 
+    public static final String BIG_COVER_SPLITER = "\t";
+    public static final String SMALL_COVER_SPLITER = "=";
+
     @Override
     public synchronized CoreConfig parser() {
 
-        // 先进性初始化，将key-value全部塞入keyValues
+        // 先进行初始化，将key-value全部塞入keyValues
         init();
 
         // 将所有的配置按照suite进行划分。
@@ -50,12 +54,25 @@ public class PropertiesParser implements Parser {
     private static void init() {
         // TODO 多maven工程下的配置管理？
         Properties prop = new OrderProperties();
-        InputStream input = ClassLoader.getSystemResourceAsStream(FILENAME);
-        try {
-            prop.load(input);
-        } catch (IOException e) {
-            logger.error("[Achelous]error occur while parser core properties file", e);
-            throw new BaseException();
+        if (StringUtils.isNotBlank(System.getProperty("file_name"))) {
+            FILENAME = System.getProperty("file_name");
+        }
+
+        // 如果需要覆盖,那么就用System变量来搞
+        String value = System.getProperty("cover_data");
+        if (value != null) {
+            for (String line : value.split(BIG_COVER_SPLITER)) {
+                String[] keyAndValue = line.split(SMALL_COVER_SPLITER);
+                prop.put(keyAndValue[0], keyAndValue[1]);
+            }
+        } else {
+            InputStream input = ClassLoader.getSystemResourceAsStream(FILENAME);
+            try {
+                prop.load(input);
+            } catch (IOException e) {
+                logger.error("[Achelous]error occur while parser core properties file", e);
+                throw new BaseException();
+            }
         }
 
         for (Object obj : prop.keySet()) {
@@ -75,15 +92,13 @@ public class PropertiesParser implements Parser {
             String[] keyMetas = entry.getKey().toString().split("\\.");
 
             // 如果是全局参数，则处理。模式为"global.config"
-            if (keyMetas.length == 3 && !keyMetas[1].equals("plugin")) {// 如果是三截的且为"suite.plugin.config"的模式
-
-            }
             if (keyMetas.length == 3 && keyMetas[0].equals(GLOBAL_CONFIG_PREFIX) && keyMetas[1].equals("plugin")
                     && keyMetas[2].equals("path")) { // 如果是约定的插件的路径，则将信息进行装填
                 coreConfig.getGlobalConfig().put(CoreConfig.GLOBAL_PLUGIN_PATH,
                         Arrays.asList(entry.getValue().toString().split(";")));
             } else if (keyMetas.length == 2 && keyMetas[1].equals(SUITE_STAGE_FLAG)) {// 如果是"suite.stage"模式的
-                // TODO 填充suite2PluginIndexMap.类型Map<String, Map<String, Integer>>。基于这个再进行一次排序。
+                // TODO 填充suite2PluginIndexMap.类型Map<String, Map<String,
+                // Integer>>。基于这个再进行一次排序。
             } else {
 
                 String suiteName = null;

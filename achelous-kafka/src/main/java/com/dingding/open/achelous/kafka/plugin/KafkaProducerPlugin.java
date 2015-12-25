@@ -47,7 +47,7 @@ public class KafkaProducerPlugin extends AbstractPlugin {
 
         // need unique msgid.
         logger.info("[ACHELOUS]kafka producer plugin begin to process data...");
-        if (exhaust()) {
+        if (notExhaust()) {
             Properties props = new Properties();
             PropertiesUtils.put(props, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, CONF_BROKERS, config);
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -66,10 +66,9 @@ public class KafkaProducerPlugin extends AbstractPlugin {
 
         // 容错策略由Failover plugin接管
         try {
-            producer.send(new ProducerRecord(topic,
-                    realContext.getKey(), realContext.getValue())).get();
+            producer.send(new ProducerRecord(topic, realContext.getKey(), realContext.getValue())).get();
         } catch (Throwable t) {
-            logger.error("[ACHELOUS]kafka producer found catchable exception.");
+            logger.error("[ACHELOUS]kafka producer found catchable exception.", t);
             throw t;
         }
         return null;
