@@ -6,17 +6,18 @@ package com.dingding.open.achelous.common.parrel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import rx.functions.Func2;
-
+import com.dingding.open.achelous.core.Factory;
 import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.CommonPluginTypes;
+import com.dingding.open.achelous.core.support.ConcurrentCooker;
 import com.dingding.open.achelous.core.support.ConfigConstant;
 import com.dingding.open.achelous.core.support.Context;
 
@@ -31,16 +32,16 @@ public class AsyncListSchedulersPlugin extends AbstractPlugin {
 
     private static final Logger logger = Logger.getLogger(AsyncListSchedulersPlugin.class);
 
-    private ExecutorService executor;
-    private static final ConfigConstant CONF_STREAMS = new ConfigConstant("streams", "1");
+    public static volatile ConfigConstant CONF_STREAMS = new ConfigConstant("streams", "1");
+    public static volatile ConfigConstant CONF_COOKER = new ConfigConstant("cooker", "");
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Object doWork(InvokerCore core, final Context context, Map<String, String> config)
-            throws Throwable {
+    public Object doWork(InvokerCore core, final Context context, Map<String, String> config) throws Throwable {
         logger.info("[ACHELOUS]now in async processor...");
-        if (exhaust()) {
-            // executor初始化
-            executor = Executors.newFixedThreadPool(4);
+        if (notExhaust()) {
+            // executor初始化 TODO,需要的话就开大点
+            ExecutorService executor = Executors.newFixedThreadPool(4);
             int threads = 0;
             if (config.get(CONF_STREAMS.getName()) != null) {
                 threads = Integer.valueOf(config.get(CONF_STREAMS.getName()));
@@ -49,19 +50,24 @@ public class AsyncListSchedulersPlugin extends AbstractPlugin {
             }
             // 通pipeline多plugin的不支持
             setCache(CacheLevel.PIPELINE_PLUGIN, "threads", threads);
+
+            ConcurrentCooker cooker = Factory.getEntity(config.get(CONF_COOKER.getName()).toString());
+            // 如果无cooker，那么就判断result是否是list，是的话，则直接拆开；否则直接扔进去处理。此处留 TODO
+            if (cooker != null) {
+                setCache(CacheLevel.PIPELINE_PLUGIN, CONF_COOKER.getName(), cooker);
+                setCache(CacheLevel.PIPELINE_PLUGIN, "executor", executor);
+            } else {
+                // TODO
+            }
         }
 
-        // 如果无cooker，那么就判断result是否是list，是的话，则直接拆开；否则直接扔进去处理。此处留 TODO
-        if (context.getResultCooker() == null) {
-
-        }
-        // 如果有cooker，则按照cooker处理。
-        final Func2<Object, Integer, List> func = (Func2<Object, Integer, List>) context.getResultCooker();
-
+        ConcurrentCooker cooker = (ConcurrentCooker) getCache(CacheLevel.PIPELINE_PLUGIN, CONF_COOKER.getName());
         // 先拿到上一个的响应打成list
-        final List mtls = func.call(context.getResult().get(), (int) getCache(CacheLevel.PIPELINE_PLUGIN, "threads"));
+        final List mtls = (List) (cooker.call(context.getResult().get(),
+                (int) getCache(CacheLevel.PIPELINE_PLUGIN, "threads"), config));
 
         // 随后将链条丢入执行器执行
+        Executor executor = getCache(CacheLevel.PIPELINE_PLUGIN, "executor");
         for (final Object mtl : mtls) {
             executor.execute(new AsyncJob(core, mtl, context));
         }

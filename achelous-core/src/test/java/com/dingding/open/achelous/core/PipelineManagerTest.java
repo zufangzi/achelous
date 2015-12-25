@@ -15,7 +15,7 @@ import com.dingding.open.achelous.common.failover.RetryPlugin;
  * @date Nov 8, 2015
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:ctx-dd.xml")
+@ContextConfiguration(locations = "classpath:achelous-core.xml")
 public class PipelineManagerTest {
 
     @Autowired

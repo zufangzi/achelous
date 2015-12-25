@@ -5,6 +5,7 @@
 package com.dingding.open.achelous.kafka.mixtest;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import com.dingding.open.achelous.kafka.support.AchelousKafka;
  * @date Oct 29, 2015
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:ctx-dd.xml")
+@ContextConfiguration(locations = "classpath:achelous-core.xml")
 public class AchelousKafkaSpringTest {
 
     @Autowired
@@ -29,6 +30,7 @@ public class AchelousKafkaSpringTest {
 
     @Test
     public void test_only_producer_simple_normal_case1() {
+        System.setProperty("file_name", "seda_only_producer_simple.properties");
         try {
             for (int i = 0; i < 1000; i++) {
                 kafka.pub(new TestObj(i));
@@ -40,4 +42,21 @@ public class AchelousKafkaSpringTest {
         }
     }
 
+    @BeforeClass
+    public static void before() {
+        // test_simple_consmer_normal_case2
+        System.setProperty("file_name", "achelous_flow.properties");
+    }
+
+    @Test
+    public void test_simple_consmer_normal_case2() {
+        try {
+            kafka.sub();
+            Thread.sleep(5000000L);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+
+    }
 }

@@ -2,23 +2,23 @@
  * DingDing.com Inc.
  * Copyright (c) 2000-2016 All Rights Reserved.
  */
-package com.dingding.open.achelous.core.plugin;
+package com.dingding.open.achelous.core;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 插件名。用以进行插件处理类的路由。支持classpath以及plugin.impl两个目录。
  * 
  * @author surlymo
- * @date Oct 27, 2015
+ * @date 11:34:26 AM Dec 25, 2015
  */
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface PluginName {
+public @interface DefaultProps {
+
     /**
-     * 插件路径
+     * argsA:valA, argsB:valB
      * 
-     * @return String
+     * @return
      */
-    String value();
+    String[] value();
 }
