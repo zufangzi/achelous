@@ -48,8 +48,9 @@ consumer.kafka_producer.brokers=localhost:9092_
 ```
 
 + 以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
+
 **非Spring项目**
-待补充.使用方式基本一致.使用方式请见achelous-kafka工程下的单测.
++ 待补充.使用方式基本一致.使用方式请见achelous-kafka工程下的单测.
 
 
 ##Paraphrase
