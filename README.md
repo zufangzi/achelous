@@ -6,7 +6,8 @@
 seda项目常用于消息中心,异步推送通知的场景中.
 
 **基于Spring的使用方**
-+ 配置文件引用<import resource="achelous-core.xml"/>
++ Spring配置文件引用&lt; import resource="achelous-core.xml"/&gt;
+
 + 如果是消费者方,则增加kafka.properties配置文件,声明如下
 
 ```
