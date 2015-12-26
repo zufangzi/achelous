@@ -1,9 +1,11 @@
 #Achelous
 
 ##QuickStart
-###基于Kafka的SEDA项目.
+以下将通过几个常见的使用case来简单说明如何使用Achelous框架
+###case: 基于Kafka的SEDA项目**
 seda项目常用于消息中心,异步推送通知的场景中.
-一.基于Spring的使用方
+
+**基于Spring的使用方**
 1. 配置文件引用<import resource="achelous-core.xml"/>
 2. 如果是消费者方,则增加kafka.properties配置文件,声明如下
 
@@ -46,8 +48,7 @@ consumer.kafka_producer.brokers=localhost:9092_
 ```
 
 7.以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
-
-二. 非Spring项目
+**非Spring项目**
 待补充.使用方式基本一致.使用方式请见achelous-kafka工程下的单测.
 
 
