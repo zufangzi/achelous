@@ -6,6 +6,16 @@
 seda项目常用于消息中心,异步推送通知的场景中.
 
 **基于Spring的使用方**
++ 增加maven依赖.如果仓库中还没有该依赖.cd到achelous-output目录下, 执行maven install -Dmaven.test.skip=true. 
+
+```
+&lt; dependency&gt;
+	&lt; groupId&gt;com.dingding &lt;/groupId &gt;
+	&lt; artifactId&gt;achelous-output &lt;/artifactId &gt;
+	&lt; version&gt;1.0.0-SNAPSHOT &lt;/version &gt;
+&lt; /dependency&gt;
+```
+
 + Spring配置文件引用&lt; import resource="achelous-core.xml"/&gt;
 
 + 如果是消费者方,则增加kafka.properties配置文件,声明如下

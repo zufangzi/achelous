@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>achelous-parent</artifactId>
+		<groupId>com.dingding</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>achelous-output</artifactId>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+	<description>The all in one project of achelous</description>
+	<properties>
+		<skip_maven_deploy>false</skip_maven_deploy>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.dingding</groupId>
+			<artifactId>achelous-kafka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.dingding</groupId>
+			<artifactId>achelous-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.dingding</groupId>
+			<artifactId>achelous-fluent</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.dingding</groupId>
+			<artifactId>achelous-seda</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createSourcesJar>true</createSourcesJar>
+							<promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+							<artifactSet>
+								<includes>
+									<include>com.dingding:achelous-kafka</include>
+									<include>com.dingding:achelous-core</include>
+									<include>com.dingding:achelous-seda</include>
+									<include>com.dingding:achelous-fluent</include>
+								</includes>
+							</artifactSet>
+							
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

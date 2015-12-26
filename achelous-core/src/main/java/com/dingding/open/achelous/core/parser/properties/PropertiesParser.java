@@ -4,6 +4,9 @@
  */
 package com.dingding.open.achelous.core.parser.properties;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -66,7 +69,15 @@ public class PropertiesParser implements Parser {
                 prop.put(keyAndValue[0], keyAndValue[1]);
             }
         } else {
-            InputStream input = ClassLoader.getSystemResourceAsStream(FILENAME);
+            // 不可用ClassLoader.getSystemResourceAsStream.
+            InputStream input = null;
+            try {
+                input = new FileInputStream(new File(
+                        Thread.currentThread().getContextClassLoader().getResource(FILENAME).getFile()));
+            } catch (FileNotFoundException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             try {
                 prop.load(input);
             } catch (IOException e) {
