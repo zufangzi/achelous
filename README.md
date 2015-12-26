@@ -2,12 +2,12 @@
 
 ##QuickStart
 以下将通过几个常见的使用case来简单说明如何使用Achelous框架
-###case: 基于Kafka的SEDA项目**
+###case: 基于Kafka的SEDA项目
 seda项目常用于消息中心,异步推送通知的场景中.
 
 **基于Spring的使用方**
-1. 配置文件引用<import resource="achelous-core.xml"/>
-2. 如果是消费者方,则增加kafka.properties配置文件,声明如下
++ 配置文件引用<import resource="achelous-core.xml"/>
++ 如果是消费者方,则增加kafka.properties配置文件,声明如下
 
 ```
 kafka_consumer.zkconfig=localhost:2181 #kafka所用的zk地址
@@ -16,7 +16,7 @@ async.streams=4 #同时处理线程数
 kafka_proc.worker=kafkaConsumerTestWorker #实际消费处理者的bean名
 ```
 
-3. 如果是生产者方,则增加kafka.properties配置文件,声明如下
++ 如果是生产者方,则增加kafka.properties配置文件,声明如下
 
 ```
 fail_retry.times=1 #失败重试1次
@@ -28,9 +28,9 @@ kafka_producer.to=my-replicated-topic
 kafka_producer.brokers=localhost:9092a broker地址,多个按照逗号分隔
 ```
 
-4. 如果是消费者方, 则只需调用一次KafkaBootStraper.startSpringConsumer()即可.
-5. 如果是生产者方, 则推送的时候调用 KafkaBootStraper.get().pub(new TestObj())即可.
-6. 如果同一个使用方中,既有生产者也有消费者,则配置如下,调用时,要推送则KafkaBootStraper.get().pubDefaultKey("producer", new TestObj());要消费则KafkaBootStraper.get().sub("consumer");
++ 如果是消费者方, 则只需调用一次KafkaBootStraper.startSpringConsumer()即可.
++ 如果是生产者方, 则推送的时候调用 KafkaBootStraper.get().pub(new TestObj())即可.
++ 如果同一个使用方中,既有生产者也有消费者,则配置如下,调用时,要推送则KafkaBootStraper.get().pubDefaultKey("producer", new TestObj());要消费则KafkaBootStraper.get().sub("consumer");
 
 ```
 producer.fail_retry.times=1
@@ -47,7 +47,7 @@ consumer.kafka_producer.to=my-replicated-topic
 consumer.kafka_producer.brokers=localhost:9092_
 ```
 
-7.以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
++ 以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
 **非Spring项目**
 待补充.使用方式基本一致.使用方式请见achelous-kafka工程下的单测.
 
