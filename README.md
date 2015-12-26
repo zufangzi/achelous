@@ -9,11 +9,11 @@ seda项目常用于消息中心,异步推送通知的场景中.
 + 增加maven依赖.如果仓库中还没有该依赖.cd到achelous-output目录下, 执行maven install -Dmaven.test.skip=true. 
 
 ```
-	<dependency>
-		<groupId>com.dingding</groupId>
-		<artifactId>achelous-output</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</dependency>
+<dependency>
+	<groupId>com.dingding</groupId>
+	<artifactId>achelous-output</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
 + Spring配置文件引用&lt; import resource="achelous-core.xml"/&gt;
