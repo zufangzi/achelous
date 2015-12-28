@@ -85,7 +85,7 @@ inf@zufangit.cn
 + 提供NextPlugins, PrePlugins来进行插件绑定，从而简化声明方式
 + 提供ExecMode来对于只需全局执行一次的Plugin进行支持。
 + 对kafkaProducerPlugin和AsyncListSchedulerPlugin进行拆解。
-+ 进行benchmark测试。测试结果另附。插件性能在单条数据为1k时候TPS仍可达到2w+， 接近原生kafka客户端速度。
++ 进行benchmark测试。测试结果见kafka工程下的benchmark package中的excel文件。插件性能在单条数据为1k时候TPS仍可达到2w+， 接近原生kafka客户端速度。
 + 修复多线程下的一些bug。进行部分代码优化。
 
 **v0.8** —— **2015-12-25**
