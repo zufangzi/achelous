@@ -22,9 +22,11 @@ public interface Plugin {
     /**
      * 进行初始化。找到对应的pluginName
      */
-    Plugin init(String pipeline);
+    Plugin init();
 
     void onCallBack(CallbackType type, InvokerCore core, Context context);
+
+    ExecModes getExecMode();
 
     /**
      * 核心执行函数。

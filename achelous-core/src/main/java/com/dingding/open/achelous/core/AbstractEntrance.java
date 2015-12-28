@@ -24,7 +24,7 @@ public abstract class AbstractEntrance implements ApplicationContextAware {
     protected static volatile PipelineManager manager;
 
     protected AbstractEntrance() {
-        init(false);
+        // init(false);
     }
 
     protected AbstractEntrance(boolean flag) {
@@ -55,7 +55,7 @@ public abstract class AbstractEntrance implements ApplicationContextAware {
         }
         manager.coreInit(context);
         PluginPath pluginPath = this.getClass().getAnnotation(PluginPath.class);
-        if (pluginPath != null) {
+        if (pluginPath != null && context == null) {
             PipelineManager.checkPluginPath(pluginPath.value());
         }
         getDefaultProps();

@@ -34,4 +34,6 @@ public class CommonPluginTypes extends PluginTypes {
     public static final String FAIL_RETRY = "fail_retry";
 
     public static final String ASYNC_LIST_SCHEDULER = "async";
+
+    public static final String ASYNC_LIST_START_SCHEDULER = "async_start";
 }

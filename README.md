@@ -21,22 +21,18 @@ seda项目常用于消息中心,异步推送通知的场景中.
 + 如果是消费者方,则增加kafka.properties配置文件,声明如下
 
 ```
-kafka_consumer.zkconfig=localhost:2181 #kafka所用的zk地址
+kafka_consumer.zkconfig=localhost:2181  #kafka所用的zk地址
 async.from=my-replicated-topic #订阅topic
-async.streams=4 #同时处理线程数
 kafka_proc.worker=kafkaConsumerTestWorker #实际消费处理者的bean名
 ```
 
 + 如果是生产者方,则增加kafka.properties配置文件,声明如下
 
 ```
-fail_retry.times=1 #失败重试1次
-fail_retry.sleep=1000 #失败重试间隔1000ms
-kafka_producer.to=my-replicated-topic #推送topic
-kafka_producer.brokers=localhost:9092 #kafkfail_retry.times=1
-fail_retry.sleep=1000
+kafka_producer_boot.brokers=localhost:9092
+fail_retry.times=1 #失败重试1次,可不填
+fail_retry.sleep=1000 #失败重试间隔1000ms，可不填
 kafka_producer.to=my-replicated-topic
-kafka_producer.brokers=localhost:9092a broker地址,多个按照逗号分隔
 ```
 
 + 如果是消费者方, 则只需调用一次KafkaBootStraper.startSpringConsumer()即可.
@@ -44,18 +40,14 @@ kafka_producer.brokers=localhost:9092a broker地址,多个按照逗号分隔
 + 如果同一个使用方中,既有生产者也有消费者,则配置如下,调用时,要推送则KafkaBootStraper.get().pubDefaultKey("producer", new TestObj());要消费则KafkaBootStraper.get().sub("consumer");
 
 ```
-producer.fail_retry.times=1
-producer.fail_retry.sleep=1000
-producer.kafka_producer.to=my-replicated-topic2
-producer.kafka_producer.brokers=localhost:9092
+producer.kafka_producer_boot.brokers=localhost:9092
+producer.fail_retry.times=1 #失败重试1次,可不填
+producer.fail_retry.sleep=1000 #失败重试间隔1000ms，可不填
+producer.kafka_producer.to=my-replicated-topic
 
-consumer.kafka_consumer.zkconfig=localhost:2181
-consumer.async.cooker_msgfrom=my-replicated-topic
-consumer.async.cooker=com.dingding.open.achelous.kafka.support.KafkaAsyancCooker #可不写
-consumer.async.streams=4
-consumer.kafka_proc.worker=kafkaConsumerTestWorker
-consumer.kafka_producer.to=my-replicated-topic
-consumer.kafka_producer.brokers=localhost:9092_
+consumer.kafka_consumer.zkconfig=localhost:2181  #kafka所用的zk地址
+consumer.async.from=my-replicated-topic #订阅topic
+consumer.kafka_proc.worker=kafkaConsumerTestWorker #实际消费处理者的bean名
 ```
 
 + 以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
@@ -88,6 +80,13 @@ achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的�
 inf@zufangit.cn
 
 ## Changelog
+
+**v0.9** —— **2015-12-28**
++ 提供NextPlugins, PrePlugins来进行插件绑定，从而简化声明方式
++ 提供ExecMode来对于只需全局执行一次的Plugin进行支持。
++ 对kafkaProducerPlugin和AsyncListSchedulerPlugin进行拆解。
++ 进行benchmark测试。测试结果另附。插件性能在单条数据为1k时候TPS仍可达到2w+， 接近原生kafka客户端速度。
++ 修复多线程下的一些bug。进行部分代码优化。
 
 **v0.8** —— **2015-12-25**
 + 对锁逻辑进行优化升级.性能提升.

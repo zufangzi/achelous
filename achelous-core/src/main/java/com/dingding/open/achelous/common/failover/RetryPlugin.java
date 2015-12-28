@@ -44,6 +44,7 @@ public class RetryPlugin extends AbstractPlugin {
 
     @Override
     public Object doWork(InvokerCore core, Context context, Map<String, String> config) throws Throwable {
+
         String attach = attachConfig;
         int totalCnt = 0;
         long sleep = 0L;
@@ -73,6 +74,7 @@ public class RetryPlugin extends AbstractPlugin {
                     break;
                 }
                 try {
+                    System.out.println("oh no");
                     Thread.sleep(sleep);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
@@ -84,7 +86,11 @@ public class RetryPlugin extends AbstractPlugin {
         if (!isOk) {
             invoker.callback(CallbackType.ERROR, core);
         }
-        return null;
+
+        // core 要减一
+        core.getCurrentIndex().set(core.getCurrentIndex().get() - 1);
+
+        return NEED_GO_AHEAD;
     }
 
 }

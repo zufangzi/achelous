@@ -21,6 +21,8 @@ public interface Pipeline {
         END, OK, ERROR
     }
 
+    <T extends Plugin> void deletePlugin(String pluginNameWithSequnece);
+
     /**
      * plugin打包与初始化
      * 

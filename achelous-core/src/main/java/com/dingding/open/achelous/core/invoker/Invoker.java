@@ -15,6 +15,9 @@ import com.dingding.open.achelous.core.support.CallbackType;
  * @date Oct 27, 2015
  */
 public interface Invoker {
+
+    boolean isOnlyOnceInvoker();
+
     /**
      * 真实调用方法
      * 

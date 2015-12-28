@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.dingding.open.achelous.core.Factory;
@@ -32,6 +33,7 @@ import kafka.message.MessageAndMetadata;
  * @author surlymo
  * @date Nov 10, 2015
  */
+@Component
 @PluginName(KafkaPluginTypes.KAFKA_PROC)
 public class KafkaComProcessorPlugin extends AbstractPlugin {
 
@@ -42,7 +44,7 @@ public class KafkaComProcessorPlugin extends AbstractPlugin {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Object doWork(InvokerCore core, final Context context, final Map<String, String> config) throws Throwable {
-
+        System.out.println("now in com processor...");
         MessageWorker worker = Factory.getEntity(config.get(CONF_WORKER.getName()).toString());
 
         Type genType = worker.getClass().getGenericInterfaces()[0];

@@ -59,6 +59,7 @@ public class HierarchicalCache {
      * @return cache的value
      */
     public static <T> T getLevel2Cache(String pipeline, String plugin, String key) {
+        // System.out.println("pieline: " + pipeline + " plugin: " + plugin + " key: " + key);
         return (T) level2Cache.get(pipeline + plugin).get(key);
     }
 

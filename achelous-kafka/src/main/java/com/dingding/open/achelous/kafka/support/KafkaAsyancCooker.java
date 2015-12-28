@@ -30,6 +30,7 @@ public class KafkaAsyancCooker implements
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         String topic = config.get(CONF_FROM.getName());
         topicCountMap.put(topic, threads);
+        System.out.println(config);
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
         List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
         return streams;

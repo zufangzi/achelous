@@ -24,7 +24,7 @@ import com.dingding.open.achelous.core.support.Context;
 @Component
 @PluginPath("com.dingding.open.achelous.kafka.plugin")
 @FilePath("kafka.properties")
-@DefaultProps({ "async.cooker=com.dingding.open.achelous.kafka.support.KafkaAsyancCooker" })
+@DefaultProps({ "async_start.cooker=com.dingding.open.achelous.kafka.support.KafkaAsyancCooker" })
 public class AchelousKafka extends AbstractEntrance {
 
     public AchelousKafka() {
@@ -35,8 +35,8 @@ public class AchelousKafka extends AbstractEntrance {
         super(flag);
     }
 
-    // 非spring调用时候使用
-    public static final AchelousKafka INSTANCE = new AchelousKafka(true);
+    // 非spring调用时候使用. TODO
+    public static volatile AchelousKafka INSTANCE;
 
     public void pub(Object value) {
         manager.call(fillPubBaseContext("", value));

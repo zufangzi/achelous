@@ -25,29 +25,14 @@ public abstract class AbstractPlugin implements Plugin {
         THREAD, PIPELINE, PIPELINE_PLUGIN
     }
 
+    protected static final Object NEED_GO_AHEAD = new Object();
+
     private static final String CACHE_PIPELINE = "pipeline";
 
-    private String pluginName = null;
+    private volatile String pluginName = null;
+    private volatile ExecModes execMode = ExecModes.ALWAYS_IN;
 
     protected String attachConfig;
-
-    protected boolean notExhaust() {
-
-        // 如果已经耗尽,则直接打回
-        String pipeline = HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE);
-        boolean exhaustMark = PipelineManager.exhaustFlags.get(pipeline + pluginName);
-        if (exhaustMark) {
-            return false;
-        }
-
-        // 如果还未耗尽,再进行一次稍微麻烦点的判断.
-        if (PipelineManager.mutexs.get(pipeline + pluginName).compareAndSet(false, true)) {
-            PipelineManager.exhaustFlags.put(pipeline + pluginName, true);
-            return true;
-        }
-
-        return false;
-    }
 
     @SuppressWarnings("unchecked")
     protected <M> M getCache(CacheLevel level, String key) {
@@ -62,6 +47,24 @@ public abstract class AbstractPlugin implements Plugin {
                 return (M) HierarchicalCache.getLevel2Cache(
                         (String) HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE),
                         pluginName, key);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    protected <M> void setCache(CacheLevel level, String pluginName, String key, M value) {
+        switch (level) {
+            case THREAD:
+                HierarchicalCache.setLevel3CacheKey(key, value);
+                break;
+            case PIPELINE:
+                HierarchicalCache.setLevel1CacheKey((String) HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE), key,
+                        value);
+                break;
+            case PIPELINE_PLUGIN:
+                HierarchicalCache.setLevel2CacheKey((String) HierarchicalCache.getLevel3CacheByKey(CACHE_PIPELINE),
+                        pluginName, key, value);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -86,8 +89,12 @@ public abstract class AbstractPlugin implements Plugin {
     }
 
     @Override
-    public Plugin init(String pipeline) {
+    public Plugin init() {
         pluginName = this.getClass().getAnnotation(PluginName.class).value();
+        ExecMode mode = this.getClass().getAnnotation(ExecMode.class);
+        if (mode != null) {
+            execMode = mode.value();
+        }
         return this;
     }
 
@@ -108,9 +115,9 @@ public abstract class AbstractPlugin implements Plugin {
             HierarchicalCache.setLevel3CacheKey(CACHE_PIPELINE, context.getPipelineName());
         }
 
-        int count = 0;
+        int count = 1;
         if (context.getPluginName2RepeatCounter().get(pluginName) == null) {
-            context.getPluginName2RepeatCounter().put(pluginName, 1);
+            context.getPluginName2RepeatCounter().put(pluginName, 2);
         } else {
             int oldValue = context.getPluginName2RepeatCounter().get(pluginName);
             count = ++oldValue;
@@ -152,4 +159,9 @@ public abstract class AbstractPlugin implements Plugin {
     }
 
     public abstract Object doWork(InvokerCore core, Context context, Map<String, String> config) throws Throwable;
+
+    @Override
+    public ExecModes getExecMode() {
+        return execMode;
+    }
 }

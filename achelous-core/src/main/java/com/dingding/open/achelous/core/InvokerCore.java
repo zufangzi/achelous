@@ -7,6 +7,15 @@ import com.dingding.open.achelous.core.invoker.Invoker;
 public class InvokerCore {
     private ThreadLocal<Integer> currentIndex = new ThreadLocal<Integer>();
     private ArrayList<Invoker> invokers;
+    private Integer notCommonTimes = 0;
+
+    public Integer getNotCommonTimes() {
+        return notCommonTimes;
+    }
+
+    public void setNotCommonTimes(Integer notCommonTimes) {
+        this.notCommonTimes = notCommonTimes;
+    }
 
     public ThreadLocal<Integer> getCurrentIndex() {
         return currentIndex;
@@ -42,7 +51,7 @@ public class InvokerCore {
     }
 
     public Invoker nextN(int n, boolean onlyExecOnce) {
-        int nextIndex = this.getCurrentIndex().get() + 1;
+        int nextIndex = this.getCurrentIndex().get() + n;
         Invoker invoker = this.getInvokers().get(nextIndex);
         if (onlyExecOnce) {
             this.getCurrentIndex().set(nextIndex);

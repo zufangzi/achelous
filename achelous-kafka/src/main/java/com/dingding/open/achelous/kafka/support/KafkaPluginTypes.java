@@ -25,4 +25,6 @@ public class KafkaPluginTypes extends PluginTypes {
      * 以kafka作为生产者的插件。
      */
     public static final String KAFKA_PRODUCER = "kafka_producer";
+
+    public static final String KAFKA_PRODUCER_STARTER = "kafka_producer_boot";
 }
