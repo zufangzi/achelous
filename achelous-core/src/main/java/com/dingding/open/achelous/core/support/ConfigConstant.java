@@ -11,6 +11,8 @@ package com.dingding.open.achelous.core.support;
  * @date Nov 3, 2015
  */
 public class ConfigConstant {
+
+    public static final String SHOULD_NOT_BE_EMPTY = "should_not_be_empty";
     private String name;
     private String defaultConfig;
 

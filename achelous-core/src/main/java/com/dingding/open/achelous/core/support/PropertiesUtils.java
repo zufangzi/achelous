@@ -26,6 +26,9 @@ public class PropertiesUtils {
      */
     public static void put(Properties properties, String key, ConfigConstant value, Map<String, String> config) {
         if (config.get(value.getName()) == null && value.getDefaultConfig() != null) {
+            if (value.getDefaultConfig().equals(ConfigConstant.SHOULD_NOT_BE_EMPTY)) {
+                throw new IllegalArgumentException(key + " should not be empty!");
+            }
             properties.put(key, value.getDefaultConfig());
         } else if (config.get(value.getName()) == null && value.getDefaultConfig() == null) {
             return;
