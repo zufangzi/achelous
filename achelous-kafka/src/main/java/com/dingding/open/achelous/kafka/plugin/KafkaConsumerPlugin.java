@@ -45,7 +45,7 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
         Properties props = new Properties();
         PropertiesUtils.put(props, "zookeeper.connect", CONF_ZKCONFIG, config);
         PropertiesUtils.put(props, "group.id", CONF_GROUP, config);
-        props.put("zookeeper.session.timeout.ms", "400");
+        props.put("zookeeper.session.timeout.ms", "40000");
         props.put("zookeeper.sync.time.ms", "200");
         props.put("auto.commit.interval.ms", "1000");
 

@@ -21,7 +21,7 @@ import com.dingding.open.achelous.kafka.KafkaBootStraper;
 
 public class KafkaAndAchelousBenchmarkTest {
 
-    static int num = 2000000;
+    static int num = 10;
 
     @Test
     public void test_achelous_sub() {
