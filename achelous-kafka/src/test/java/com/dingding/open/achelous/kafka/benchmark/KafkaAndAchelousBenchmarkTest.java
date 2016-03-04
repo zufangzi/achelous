@@ -71,7 +71,7 @@ public class KafkaAndAchelousBenchmarkTest {
 
         long end = System.currentTimeMillis();
 
-        System.out.println("COST: " + (end - begin));
+//        System.out.println("COST: " + (end - begin));
         System.gc();
         // System.in.read();
     }

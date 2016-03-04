@@ -26,7 +26,7 @@ public class KafkaBootStraperTest {
 
     @Test
     public void test_only_producer_simple_normal_case1() {
-        System.setProperty("file_name", "seda_only_producer_simple.properties");
+        System.setProperty("file_name", "kafka.properties");
         try {
             for (int i = 0; i < 1000; i++) {
                 KafkaBootStraper.get().pub(new TestObj(i));

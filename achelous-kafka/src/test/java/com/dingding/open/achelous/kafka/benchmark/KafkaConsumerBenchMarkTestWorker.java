@@ -8,7 +8,7 @@ import com.dingding.open.achelous.kafka.support.KafkaContext;
 import com.dingding.open.achelous.worker.MessageWorker;
 
 @Component
-public class KafkaConsumerTestWorker2 implements MessageWorker<AgentKpDetailsData, List<KafkaContext>> {
+public class KafkaConsumerBenchMarkTestWorker implements MessageWorker<AgentKpDetailsData, List<KafkaContext>> {
 
     @Override
     public List<KafkaContext> proc(AgentKpDetailsData message) {

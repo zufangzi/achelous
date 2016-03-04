@@ -194,7 +194,7 @@ public class PipelineManager {
             }
         }
 
-        pluginsFeatureMap.put(pluginName + sequence, metaPluginConfigs);
+        pluginsFeatureMap.put(pluginName + "_" + sequence, metaPluginConfigs);
     }
 
     public static void refreshPipelinePlugins(String pipeline) {
@@ -209,6 +209,7 @@ public class PipelineManager {
                     if (key.contains(pluginKey) && pluginMap.get(pluginKey).getExecMode().equals(ExecModes.ONLY_ONCE)) {
                         System.out.println("remove: " + key);
                         iterator.remove();
+                        System.out.println("helloworld");
                         // pipelinepool不需要concurrent
                         pipelinePool.get(pipeline).deletePlugin(key);
                     }

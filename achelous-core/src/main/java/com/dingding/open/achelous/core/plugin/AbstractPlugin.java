@@ -124,9 +124,9 @@ public abstract class AbstractPlugin implements Plugin {
             context.getPluginName2RepeatCounter().put(pluginName, count);
         }
 
-        Map<String, String> ctMap = context.initPluginsConfig(pluginName + count);
+        Map<String, String> ctMap = context.initPluginsConfig(pluginName + "_" + count);
         if (ctMap == null) {
-            ctMap = context.initPluginsConfig(pluginName + 1);
+            ctMap = context.initPluginsConfig(pluginName + "_" + 1);
         }
 
         Object rst = doWork(core, context, ctMap);
