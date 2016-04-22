@@ -7,6 +7,8 @@ package com.dingding.open.achelous.core.support;
 import java.util.HashMap;
 import java.util.Map;
 
+import rx.functions.Function;
+
 /**
  * plugin执行过程中的上下文封装。
  * 
@@ -20,6 +22,24 @@ public class Context {
     private String pipelineName;
     private String attach;
     private Map<String, Object> contextMap = new HashMap<String, Object>();
+    private ThreadLocal<Object> result = new ThreadLocal<Object>();
+    private Function resultCooker;
+
+    public ThreadLocal<Object> getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result.set(result);
+    }
+
+    public Function getResultCooker() {
+        return resultCooker;
+    }
+
+    public void setResultCooker(Function resultCooker) {
+        this.resultCooker = resultCooker;
+    }
 
     public Map<String, Integer> getPluginName2RepeatCounter() {
         return pluginName2RepeatCounter;

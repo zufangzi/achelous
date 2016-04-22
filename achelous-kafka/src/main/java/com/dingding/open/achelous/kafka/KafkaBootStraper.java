@@ -4,6 +4,12 @@
  */
 package com.dingding.open.achelous.kafka;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+
 import com.dingding.open.achelous.kafka.support.AchelousKafka;
 
 /**
@@ -12,12 +18,35 @@ import com.dingding.open.achelous.kafka.support.AchelousKafka;
  * @author surlymo
  * @date Nov 3, 2015
  */
-public class KafkaBootStraper {
-    public static void startConsumer() {
-        AchelousKafka.INSTANCE.sub();
+@Component
+public class KafkaBootStraper implements ApplicationContextAware {
+
+    @SuppressWarnings("unused")
+    @Autowired
+    private AchelousKafka orderMock;
+
+    private static AchelousKafka kafka;
+
+    private static volatile boolean isOpen = true;
+
+    public static AchelousKafka get() {
+        return kafka;
     }
 
-    public static void startProducer() {
-        AchelousKafka.INSTANCE.init();
+    public static void startSpringConsumer() {
+        if (isOpen) {
+            kafka.sub();
+        }
+    }
+
+    public static void startConsumer() {
+        if (isOpen) {
+            AchelousKafka.INSTANCE.sub();
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        kafka = context.getBean(AchelousKafka.class);
     }
 }

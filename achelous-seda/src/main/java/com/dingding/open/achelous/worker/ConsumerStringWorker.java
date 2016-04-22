@@ -4,13 +4,12 @@
  */
 package com.dingding.open.achelous.worker;
 
-
 /**
  * 字符串消息处理器
  * 
  * @author surlymo
  * @date Nov 3, 2015
  */
-public abstract class ConsumerStringWorker implements MessageWorker<String> {
+public abstract class ConsumerStringWorker<T> implements MessageWorker<String, T> {
 
 }

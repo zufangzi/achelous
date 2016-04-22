@@ -13,6 +13,7 @@
 		<module>achelous-seda</module>
 		<module>achelous-kafka</module>
 		<module>achelous-fluent</module>
+		<module>achelous-output</module>
 	</modules>
 
 	<properties>
@@ -41,6 +42,11 @@
 				<groupId>com.dingding</groupId>
 				<artifactId>achelous-seda</artifactId>
 				<version>${achelous.seda.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dingding</groupId>
+				<artifactId>achelous-kafka</artifactId>
+				<version>${achelous.core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -97,6 +103,16 @@
 
 
 			<!-- spring related -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>

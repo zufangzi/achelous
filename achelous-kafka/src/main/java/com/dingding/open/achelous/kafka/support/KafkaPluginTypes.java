@@ -14,6 +14,8 @@ import com.dingding.open.achelous.core.plugin.PluginTypes;
  */
 public class KafkaPluginTypes extends PluginTypes {
 
+    public static final String KAFKA_PROC = "kafka_proc";
+
     /**
      * 以kafka作为消费者的插件。
      */
@@ -23,4 +25,6 @@ public class KafkaPluginTypes extends PluginTypes {
      * 以kafka作为生产者的插件。
      */
     public static final String KAFKA_PRODUCER = "kafka_producer";
+
+    public static final String KAFKA_PRODUCER_STARTER = "kafka_producer_boot";
 }

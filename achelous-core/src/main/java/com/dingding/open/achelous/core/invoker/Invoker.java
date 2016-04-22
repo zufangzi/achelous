@@ -4,8 +4,7 @@
  */
 package com.dingding.open.achelous.core.invoker;
 
-import java.util.Iterator;
-
+import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.support.CallbackType;
 
 /**
@@ -16,14 +15,17 @@ import com.dingding.open.achelous.core.support.CallbackType;
  * @date Oct 27, 2015
  */
 public interface Invoker {
+
+    boolean isOnlyOnceInvoker();
+
     /**
      * 真实调用方法
      * 
      * @param iterator pipeline执行到现在为止的迭代器
      */
-    void invoke(Iterator<Invoker> iterator);
+    boolean invoke(InvokerCore core);
 
-    void callback(CallbackType type, Iterator<Invoker> iterator);
+    void callback(CallbackType type, InvokerCore core);
 
     /**
      * 设置是否跳过该执行器

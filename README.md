@@ -1,5 +1,61 @@
 #Achelous
 
+##QuickStart
+以下将通过几个常见的使用case来简单说明如何使用Achelous框架
+###case: 基于Kafka的SEDA项目
+seda项目常用于消息中心,异步推送通知的场景中.
+
+**基于Spring的使用方**
++ 增加maven依赖.如果仓库中还没有该依赖.cd到achelous-output目录下, 执行maven install -Dmaven.test.skip=true. 
+
+```
+<dependency>
+	<groupId>com.dingding</groupId>
+	<artifactId>achelous-output</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
++ Spring配置文件引用&lt; import resource="achelous-core.xml"/&gt;
+
++ 如果是消费者方,则增加kafka.properties配置文件,声明如下
+
+```
+kafka_consumer.zkconfig=localhost:2181  #kafka所用的zk地址
+async.from=my-replicated-topic #订阅topic
+kafka_proc.worker=kafkaConsumerTestWorker #实际消费处理者的bean名
+```
+
++ 如果是生产者方,则增加kafka.properties配置文件,声明如下
+
+```
+kafka_producer_boot.brokers=localhost:9092
+fail_retry.times=1 #失败重试1次,可不填
+fail_retry.sleep=1000 #失败重试间隔1000ms，可不填
+kafka_producer.to=my-replicated-topic
+```
+
++ 如果是消费者方, 则只需调用一次KafkaBootStraper.startSpringConsumer()即可.
++ 如果是生产者方, 则推送的时候调用 KafkaBootStraper.get().pub(new TestObj())即可.
++ 如果同一个使用方中,既有生产者也有消费者,则配置如下,调用时,要推送则KafkaBootStraper.get().pubDefaultKey("producer", new TestObj());要消费则KafkaBootStraper.get().sub("consumer");
+
+```
+producer.kafka_producer_boot.brokers=localhost:9092
+producer.fail_retry.times=1 #失败重试1次,可不填
+producer.fail_retry.sleep=1000 #失败重试间隔1000ms，可不填
+producer.kafka_producer.to=my-replicated-topic
+
+consumer.kafka_consumer.zkconfig=localhost:2181  #kafka所用的zk地址
+consumer.async.from=my-replicated-topic #订阅topic
+consumer.kafka_proc.worker=kafkaConsumerTestWorker #实际消费处理者的bean名
+```
+
++ 以上仅为简单使用.更深入的用法此处未给出.待补充.更多使用方式请见achelous-kafka工程下的单测.
+
+**非Spring项目**
++ 待补充.使用方式基本一致.使用方式请见achelous-kafka工程下的单测.
+
+
 ##Paraphrase
 achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的开发场景中，服务端上无数的数据流向各个服务，触发各种分支，面临着非常复杂的场景，服务的搭建、优化和治理一直是一个难题。顾名思义，该系统也即旨在为服务开发与治理提供一些辅助手段，以期规避一些常规问题，并优化产能。
 
@@ -16,12 +72,34 @@ achelous，阿刻罗俄斯，是希腊achelous river的守护神。在现实的�
 + achelous-kafka提供基于kafka的seda实现。
 
 ## Todo Recently
-+ plugin和worker对Spring的全面支持
-+ kafka生产者消费者plugin完善
 + seda模块对msgid进行支持
 + msg定时plugin开发
++ 带补充
 
-##Changelog
+## Contact Us
+inf@zufangit.cn
+
+## Changelog
+
+**v0.9** —— **2015-12-28**
++ 提供NextPlugins, PrePlugins来进行插件绑定，从而简化声明方式
++ 提供ExecMode来对于只需全局执行一次的Plugin进行支持。
++ 对kafkaProducerPlugin和AsyncListSchedulerPlugin进行拆解。
++ 进行benchmark测试。测试结果见kafka工程下的benchmark package中的excel文件。插件性能在单条数据为1k时候TPS仍可达到2w+， 接近原生kafka客户端速度。
++ 修复多线程下的一些bug。进行部分代码优化。
+
+**v0.8** —— **2015-12-25**
++ 对锁逻辑进行优化升级.性能提升.
++ Async plugin优化.增加cooker.与其他plugin解耦.
++ 增加@FilePath和@DefaultProps注解.来指定配置路径以及默认配置项.并将其与plugin解耦.
++ 对于Spring进行深度支持.
++ 对kafka进行深入封装.
++ 修复多单线程多pipeline的bug
++ 补充使用说明
+
+**v0.7** —— **2015-11-09**
++ plugin以及worker对spring提供支持
++ 提供通用异步plugin。并对kafkaConsumer的三个阶段进行改造。
 
 **v0.6** —— **2015-11-04**
 + 新增achelous-fluent工程。提供响应式API。

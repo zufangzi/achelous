@@ -4,9 +4,9 @@
  */
 package com.dingding.open.achelous.common;
 
-import java.util.Iterator;
 import java.util.Map;
 
+import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.CommonPluginTypes;
@@ -22,21 +22,21 @@ import com.dingding.open.achelous.core.support.Context;
 public class CommonProcessorPlugin extends AbstractPlugin {
 
     @Override
-    public void onError(Iterator invokers, Context context, Throwable t) {
+    public void onError(InvokerCore core, Context context, Throwable t) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void onCompleted(Iterator invokers, Context context) {
+    public void onCompleted(InvokerCore core, Context context) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void doWork(Iterator invokers, Context context, Map config) throws Throwable {
+    public Object doWork(InvokerCore core, Context context, Map config) throws Throwable {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
 }
