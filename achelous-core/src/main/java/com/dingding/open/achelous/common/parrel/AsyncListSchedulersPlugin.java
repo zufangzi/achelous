@@ -4,12 +4,6 @@
  */
 package com.dingding.open.achelous.common.parrel;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-
-import org.apache.log4j.Logger;
-
 import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.plugin.AbstractPlugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
@@ -18,6 +12,12 @@ import com.dingding.open.achelous.core.support.CommonPluginTypes;
 import com.dingding.open.achelous.core.support.ConcurrentCooker;
 import com.dingding.open.achelous.core.support.ConfigConstant;
 import com.dingding.open.achelous.core.support.Context;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * 异步调度插件
@@ -25,6 +25,7 @@ import com.dingding.open.achelous.core.support.Context;
  * @author surlymo
  * @date Nov 10, 2015
  */
+@Component
 @PluginName(CommonPluginTypes.ASYNC_LIST_SCHEDULER)
 @PrePlugins(AsyncListSchedulersStarterPlugin.class)
 public class AsyncListSchedulersPlugin extends AbstractPlugin {

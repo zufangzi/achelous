@@ -4,11 +4,6 @@
  */
 package com.dingding.open.achelous.core.pipeline;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.dingding.open.achelous.core.InvokerCore;
 import com.dingding.open.achelous.core.PipelineManager;
 import com.dingding.open.achelous.core.invoker.Invoker;
@@ -17,6 +12,11 @@ import com.dingding.open.achelous.core.plugin.Plugin;
 import com.dingding.open.achelous.core.plugin.PluginName;
 import com.dingding.open.achelous.core.support.CallbackType;
 import com.dingding.open.achelous.core.support.Context;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 默认的pipeline实现。
@@ -58,7 +58,7 @@ public class DftPipeline implements Pipeline {
 	public Pipeline combine(Context context) {
 		pipelineName.set(context.getPipelineName());
 		invokers.set(new ArrayList<Invoker>());
-		System.err.println("plugin: " + plugins.size());
+		//System.err.println("plugin: " + plugins.size());
 		Plugin combinedPlugin = plugins.get(0);
 		for (int i = 1; i <= plugins.size() - 1; i++) {
 			combinedPlugin = combine(combinedPlugin, plugins.get(i), context);
