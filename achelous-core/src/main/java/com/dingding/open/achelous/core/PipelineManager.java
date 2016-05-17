@@ -4,31 +4,22 @@
  */
 package com.dingding.open.achelous.core;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
 import com.dingding.open.achelous.core.parser.CoreConfig;
 import com.dingding.open.achelous.core.parser.Parser;
 import com.dingding.open.achelous.core.parser.properties.PropertiesParser;
 import com.dingding.open.achelous.core.pipeline.DftPipeline;
 import com.dingding.open.achelous.core.pipeline.Pipeline;
-import com.dingding.open.achelous.core.plugin.ExecModes;
-import com.dingding.open.achelous.core.plugin.NextPlugins;
-import com.dingding.open.achelous.core.plugin.Plugin;
-import com.dingding.open.achelous.core.plugin.PluginName;
-import com.dingding.open.achelous.core.plugin.PrePlugins;
+import com.dingding.open.achelous.core.plugin.*;
 import com.dingding.open.achelous.core.support.Context;
 import com.dingding.open.achelous.core.support.PluginMeta;
 import com.dingding.open.achelous.core.support.Suite;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * pipeline管理器。进行所有pipeline的解析和初始化
@@ -207,9 +198,9 @@ public class PipelineManager {
                 String key = entry.getKey();
                 for (String pluginKey : pluginMap.keySet()) {
                     if (key.contains(pluginKey) && pluginMap.get(pluginKey).getExecMode().equals(ExecModes.ONLY_ONCE)) {
-                        System.out.println("remove: " + key);
+                        //System.out.println("remove: " + key);
                         iterator.remove();
-                        System.out.println("helloworld");
+                        //System.out.println("helloworld");
                         // pipelinepool不需要concurrent
                         pipelinePool.get(pipeline).deletePlugin(key);
                     }

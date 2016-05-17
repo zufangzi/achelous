@@ -4,13 +4,12 @@
  */
 package com.dingding.open.achelous.kafka.support;
 
-import org.springframework.stereotype.Component;
-
 import com.dingding.open.achelous.core.AbstractEntrance;
 import com.dingding.open.achelous.core.DefaultProps;
 import com.dingding.open.achelous.core.FilePath;
 import com.dingding.open.achelous.core.PluginPath;
 import com.dingding.open.achelous.core.support.Context;
+import org.springframework.stereotype.Component;
 
 /**
  * <pre>
@@ -39,7 +38,7 @@ public class AchelousKafka extends AbstractEntrance {
     public static volatile AchelousKafka INSTANCE;
 
     public void pub(Object value) {
-        manager.call(fillPubBaseContext("", value));
+        manager.call(fillPubBaseContext(null, value));
     }
 
     /**
@@ -49,7 +48,7 @@ public class AchelousKafka extends AbstractEntrance {
      * @param value 发送的value
      */
     public void pubDefaultKey(String pipeline, Object value) {
-        manager.call(pipeline, fillPubBaseContext("", value));
+        manager.call(pipeline, fillPubBaseContext(null, value));
     }
 
     /**
